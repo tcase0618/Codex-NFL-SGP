@@ -1,0 +1,10 @@
+{
+  "reference": "https://www.nfl.com/transactions/league/reserve-list/2026/10?after=AAAH6gAAAAoAAAAXAAAAAAAOm_k=",
+  "retrieved_at": "2026-11-04T03:01:35.983751+00:00",
+  "resolved_reference": "https://www.nfl.com/transactions/league/reserve-list/2026/10?after=AAAH6gAAAAoAAAAXAAAAAAAOm_k=",
+  "status_code": 200,
+  "archive_file": "C:\\Users\\tcase\\OneDrive\\Documents\\Case Cap\\CaseCapitalFootballBetting\\outputs\\gap-repair-dallas\\verified-run\\archive\\5dc55cb254e3521c413106b2da6cef994e173ccddc8f90fd2d8ee398ade740f6.html",
+  "sha256": "5dc55cb254e3521c413106b2da6cef994e173ccddc8f90fd2d8ee398ade740f6",
+  "archived_bytes": 253721,
+  "body_truncated": false
+}

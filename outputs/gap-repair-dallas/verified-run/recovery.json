@@ -1,0 +1,927 @@
+{
+  "observed_at": "2026-11-04T03:01:40.619812+00:00",
+  "club_annual_route": {
+    "reference": "https://www.dallascowboys.com/team/transactions/2026",
+    "retrieved_at": "2026-11-04T03:01:33.825160+00:00",
+    "resolved_reference": "https://www.dallascowboys.com/team/transactions/2026",
+    "status_code": 404,
+    "archive_file": "C:\\Users\\tcase\\OneDrive\\Documents\\Case Cap\\CaseCapitalFootballBetting\\outputs\\gap-repair-dallas\\verified-run\\archive\\b91859e3799ec172f82fd56b6d99e8e867fea9ed41defda38f4c34095c2bdc06.html",
+    "sha256": "b91859e3799ec172f82fd56b6d99e8e867fea9ed41defda38f4c34095c2bdc06",
+    "archived_bytes": 335641,
+    "body_truncated": false,
+    "error": "http_404"
+  },
+  "windows": [
+    {
+      "kind": "DALLAS_TRANSACTION_RECOVERY",
+      "status": "PARTIAL_OFFICIAL_WINDOW",
+      "year": 2026,
+      "month": 10,
+      "team_id": "DAL",
+      "team_reference": "https://www.nfl.com/teams/dallas-cowboys",
+      "all_six_categories_complete": false,
+      "all_six_nonempty_windows_exhausted": false,
+      "season_history_complete": false,
+      "runtime_eligible": false,
+      "limits": {
+        "max_pages_per_category": 3,
+        "max_requests": 18,
+        "calendar_month_only": true,
+        "empty_windows_certify_nothing": true
+      },
+      "categories": [
+        {
+          "category": "trades",
+          "status": "OBSERVED_NONEMPTY_WINDOW_EXHAUSTED",
+          "sources": [
+            {
+              "reference": "https://www.nfl.com/transactions/league/trades/2026/10",
+              "retrieved_at": "2026-11-04T03:01:34.123515+00:00",
+              "resolved_reference": "https://www.nfl.com/transactions/league/trades/2026/10",
+              "status_code": 200,
+              "archive_file": "C:\\Users\\tcase\\OneDrive\\Documents\\Case Cap\\CaseCapitalFootballBetting\\outputs\\gap-repair-dallas\\verified-run\\archive\\5a534e3e6ebc2d11ebbdcf04073c95deffef54e3556ec5d593090adc34713b2e.html",
+              "sha256": "5a534e3e6ebc2d11ebbdcf04073c95deffef54e3556ec5d593090adc34713b2e",
+              "archived_bytes": 220990,
+              "body_truncated": false
+            }
+          ],
+          "errors": [],
+          "pages": [
+            {
+              "next_url": null,
+              "empty_marker_observed": false,
+              "scope": {
+                "year": 2026,
+                "month": 10,
+                "category": "trades",
+                "team_filter": "/teams/dallas-cowboys",
+                "publisher_team_scope": "league"
+              }
+            }
+          ],
+          "pagination_exhausted": true
+        },
+        {
+          "category": "signings",
+          "status": "PARTIAL",
+          "sources": [
+            {
+              "reference": "https://www.nfl.com/transactions/league/signings/2026/10",
+              "retrieved_at": "2026-11-04T03:01:34.546771+00:00",
+              "resolved_reference": "https://www.nfl.com/transactions/league/signings/2026/10",
+              "status_code": 200,
+              "archive_file": "C:\\Users\\tcase\\OneDrive\\Documents\\Case Cap\\CaseCapitalFootballBetting\\outputs\\gap-repair-dallas\\verified-run\\archive\\7dd239377adb6fc26c7a456074718d9513bf956f8cf8f252e9896e22b9248c07.html",
+              "sha256": "7dd239377adb6fc26c7a456074718d9513bf956f8cf8f252e9896e22b9248c07",
+              "archived_bytes": 235193,
+              "body_truncated": false
+            },
+            {
+              "reference": "https://www.nfl.com/transactions/league/signings/2026/10?after=AAAH6gAAAAoAAAAbAAAAAAAOnaY=",
+              "retrieved_at": "2026-11-04T03:01:35.027214+00:00",
+              "resolved_reference": "https://www.nfl.com/transactions/league/signings/2026/10?after=AAAH6gAAAAoAAAAbAAAAAAAOnaY=",
+              "status_code": 200,
+              "archive_file": "C:\\Users\\tcase\\OneDrive\\Documents\\Case Cap\\CaseCapitalFootballBetting\\outputs\\gap-repair-dallas\\verified-run\\archive\\4d04b07f08020a754414475f480b8b5d19f510317337eb10791d54e2fa1eb097.html",
+              "sha256": "4d04b07f08020a754414475f480b8b5d19f510317337eb10791d54e2fa1eb097",
+              "archived_bytes": 235207,
+              "body_truncated": false
+            },
+            {
+              "reference": "https://www.nfl.com/transactions/league/signings/2026/10?after=AAAH6gAAAAoAAAAcAAAAAAAOnpc=",
+              "retrieved_at": "2026-11-04T03:01:35.402639+00:00",
+              "resolved_reference": "https://www.nfl.com/transactions/league/signings/2026/10?after=AAAH6gAAAAoAAAAcAAAAAAAOnpc=",
+              "status_code": 200,
+              "archive_file": "C:\\Users\\tcase\\OneDrive\\Documents\\Case Cap\\CaseCapitalFootballBetting\\outputs\\gap-repair-dallas\\verified-run\\archive\\4d04b07f08020a754414475f480b8b5d19f510317337eb10791d54e2fa1eb097.html",
+              "sha256": "4d04b07f08020a754414475f480b8b5d19f510317337eb10791d54e2fa1eb097",
+              "archived_bytes": 235207,
+              "body_truncated": false
+            }
+          ],
+          "errors": [
+            "pagination_repeated_content"
+          ],
+          "pages": [
+            {
+              "next_url": "https://www.nfl.com/transactions/league/signings/2026/10?after=AAAH6gAAAAoAAAAbAAAAAAAOnaY=",
+              "empty_marker_observed": false,
+              "scope": {
+                "year": 2026,
+                "month": 10,
+                "category": "signings",
+                "team_filter": "/teams/dallas-cowboys",
+                "publisher_team_scope": "league"
+              }
+            },
+            {
+              "next_url": "https://www.nfl.com/transactions/league/signings/2026/10?after=AAAH6gAAAAoAAAAcAAAAAAAOnpc=",
+              "empty_marker_observed": false,
+              "scope": {
+                "year": 2026,
+                "month": 10,
+                "category": "signings",
+                "team_filter": "/teams/dallas-cowboys",
+                "publisher_team_scope": "league"
+              }
+            }
+          ],
+          "pagination_exhausted": false
+        },
+        {
+          "category": "reserve-list",
+          "status": "PARTIAL",
+          "sources": [
+            {
+              "reference": "https://www.nfl.com/transactions/league/reserve-list/2026/10",
+              "retrieved_at": "2026-11-04T03:01:35.583574+00:00",
+              "resolved_reference": "https://www.nfl.com/transactions/league/reserve-list/2026/10",
+              "status_code": 200,
+              "archive_file": "C:\\Users\\tcase\\OneDrive\\Documents\\Case Cap\\CaseCapitalFootballBetting\\outputs\\gap-repair-dallas\\verified-run\\archive\\5dc55cb254e3521c413106b2da6cef994e173ccddc8f90fd2d8ee398ade740f6.html",
+              "sha256": "5dc55cb254e3521c413106b2da6cef994e173ccddc8f90fd2d8ee398ade740f6",
+              "archived_bytes": 253721,
+              "body_truncated": false
+            },
+            {
+              "reference": "https://www.nfl.com/transactions/league/reserve-list/2026/10?after=AAAH6gAAAAoAAAAXAAAAAAAOm_k=",
+              "retrieved_at": "2026-11-04T03:01:35.983751+00:00",
+              "resolved_reference": "https://www.nfl.com/transactions/league/reserve-list/2026/10?after=AAAH6gAAAAoAAAAXAAAAAAAOm_k=",
+              "status_code": 200,
+              "archive_file": "C:\\Users\\tcase\\OneDrive\\Documents\\Case Cap\\CaseCapitalFootballBetting\\outputs\\gap-repair-dallas\\verified-run\\archive\\5dc55cb254e3521c413106b2da6cef994e173ccddc8f90fd2d8ee398ade740f6.html",
+              "sha256": "5dc55cb254e3521c413106b2da6cef994e173ccddc8f90fd2d8ee398ade740f6",
+              "archived_bytes": 253721,
+              "body_truncated": false
+            }
+          ],
+          "errors": [
+            "pagination_repeated_content"
+          ],
+          "pages": [
+            {
+              "next_url": "https://www.nfl.com/transactions/league/reserve-list/2026/10?after=AAAH6gAAAAoAAAAXAAAAAAAOm_k=",
+              "empty_marker_observed": false,
+              "scope": {
+                "year": 2026,
+                "month": 10,
+                "category": "reserve-list",
+                "team_filter": "/teams/dallas-cowboys",
+                "publisher_team_scope": "league"
+              }
+            }
+          ],
+          "pagination_exhausted": false
+        },
+        {
+          "category": "waivers",
+          "status": "PARTIAL",
+          "sources": [
+            {
+              "reference": "https://www.nfl.com/transactions/league/waivers/2026/10",
+              "retrieved_at": "2026-11-04T03:01:36.149469+00:00",
+              "resolved_reference": "https://www.nfl.com/transactions/league/waivers/2026/10",
+              "status_code": 200,
+              "archive_file": "C:\\Users\\tcase\\OneDrive\\Documents\\Case Cap\\CaseCapitalFootballBetting\\outputs\\gap-repair-dallas\\verified-run\\archive\\4e5fcb8c4ad6501d25f9fe5a70d0232325905a9b733cd6a9faef552def745bad.html",
+              "sha256": "4e5fcb8c4ad6501d25f9fe5a70d0232325905a9b733cd6a9faef552def745bad",
+              "archived_bytes": 247735,
+              "body_truncated": false
+            },
+            {
+              "reference": "https://www.nfl.com/transactions/league/waivers/2026/10?after=AAAH6gAAAAoAAAAXAAAAAAAOm-E=",
+              "retrieved_at": "2026-11-04T03:01:36.574365+00:00",
+              "resolved_reference": "https://www.nfl.com/transactions/league/waivers/2026/10?after=AAAH6gAAAAoAAAAXAAAAAAAOm-E=",
+              "status_code": 200,
+              "archive_file": "C:\\Users\\tcase\\OneDrive\\Documents\\Case Cap\\CaseCapitalFootballBetting\\outputs\\gap-repair-dallas\\verified-run\\archive\\4e5fcb8c4ad6501d25f9fe5a70d0232325905a9b733cd6a9faef552def745bad.html",
+              "sha256": "4e5fcb8c4ad6501d25f9fe5a70d0232325905a9b733cd6a9faef552def745bad",
+              "archived_bytes": 247735,
+              "body_truncated": false
+            }
+          ],
+          "errors": [
+            "pagination_repeated_content"
+          ],
+          "pages": [
+            {
+              "next_url": "https://www.nfl.com/transactions/league/waivers/2026/10?after=AAAH6gAAAAoAAAAXAAAAAAAOm-E=",
+              "empty_marker_observed": false,
+              "scope": {
+                "year": 2026,
+                "month": 10,
+                "category": "waivers",
+                "team_filter": "/teams/dallas-cowboys",
+                "publisher_team_scope": "league"
+              }
+            }
+          ],
+          "pagination_exhausted": false
+        },
+        {
+          "category": "terminations",
+          "status": "PARTIAL",
+          "sources": [
+            {
+              "reference": "https://www.nfl.com/transactions/league/terminations/2026/10",
+              "retrieved_at": "2026-11-04T03:01:36.733457+00:00",
+              "resolved_reference": "https://www.nfl.com/transactions/league/terminations/2026/10",
+              "status_code": 200,
+              "archive_file": "C:\\Users\\tcase\\OneDrive\\Documents\\Case Cap\\CaseCapitalFootballBetting\\outputs\\gap-repair-dallas\\verified-run\\archive\\86513ca32c3e65fdd67aca834d355b1015abee49dd09336eefe49b254859ae97.html",
+              "sha256": "86513ca32c3e65fdd67aca834d355b1015abee49dd09336eefe49b254859ae97",
+              "archived_bytes": 236116,
+              "body_truncated": false
+            },
+            {
+              "reference": "https://www.nfl.com/transactions/league/terminations/2026/10?after=AAAH6gAAAAoAAAAJAAAAAAAOldw=",
+              "retrieved_at": "2026-11-04T03:01:37.152663+00:00",
+              "resolved_reference": "https://www.nfl.com/transactions/league/terminations/2026/10?after=AAAH6gAAAAoAAAAJAAAAAAAOldw=",
+              "status_code": 200,
+              "archive_file": "C:\\Users\\tcase\\OneDrive\\Documents\\Case Cap\\CaseCapitalFootballBetting\\outputs\\gap-repair-dallas\\verified-run\\archive\\86513ca32c3e65fdd67aca834d355b1015abee49dd09336eefe49b254859ae97.html",
+              "sha256": "86513ca32c3e65fdd67aca834d355b1015abee49dd09336eefe49b254859ae97",
+              "archived_bytes": 236116,
+              "body_truncated": false
+            }
+          ],
+          "errors": [
+            "pagination_repeated_content"
+          ],
+          "pages": [
+            {
+              "next_url": "https://www.nfl.com/transactions/league/terminations/2026/10?after=AAAH6gAAAAoAAAAJAAAAAAAOldw=",
+              "empty_marker_observed": false,
+              "scope": {
+                "year": 2026,
+                "month": 10,
+                "category": "terminations",
+                "team_filter": "/teams/dallas-cowboys",
+                "publisher_team_scope": "league"
+              }
+            }
+          ],
+          "pagination_exhausted": false
+        },
+        {
+          "category": "other",
+          "status": "PARTIAL",
+          "sources": [
+            {
+              "reference": "https://www.nfl.com/transactions/league/other/2026/10",
+              "retrieved_at": "2026-11-04T03:01:37.293179+00:00",
+              "resolved_reference": "https://www.nfl.com/transactions/league/other/2026/10",
+              "status_code": 200,
+              "archive_file": "C:\\Users\\tcase\\OneDrive\\Documents\\Case Cap\\CaseCapitalFootballBetting\\outputs\\gap-repair-dallas\\verified-run\\archive\\2b4465a966da0b1884cceca564e8349059b88b83d8c813c9b63558c0009b3bb5.html",
+              "sha256": "2b4465a966da0b1884cceca564e8349059b88b83d8c813c9b63558c0009b3bb5",
+              "archived_bytes": 223132,
+              "body_truncated": false
+            }
+          ],
+          "errors": [
+            "player_or_team_identity_unverified"
+          ],
+          "pages": [],
+          "pagination_exhausted": false
+        }
+      ],
+      "rows": [
+        {
+          "team_id": "DAL",
+          "team_references": [
+            "https://www.nfl.com/teams/pittsburgh-steelers",
+            "https://www.nfl.com/teams/dallas-cowboys"
+          ],
+          "date": "2026-10-01",
+          "category": "trades",
+          "columns": [
+            "Steelers Steelers",
+            "Cowboys Cowboys",
+            "10/01",
+            "Joey Porter Jr.",
+            "",
+            "Traded"
+          ],
+          "player_reference": "https://www.nfl.com/players/joey-porter-jr/",
+          "source": {
+            "reference": "https://www.nfl.com/transactions/league/trades/2026/10",
+            "retrieved_at": "2026-11-04T03:01:34.123515+00:00",
+            "resolved_reference": "https://www.nfl.com/transactions/league/trades/2026/10",
+            "status_code": 200,
+            "archive_file": "C:\\Users\\tcase\\OneDrive\\Documents\\Case Cap\\CaseCapitalFootballBetting\\outputs\\gap-repair-dallas\\verified-run\\archive\\5a534e3e6ebc2d11ebbdcf04073c95deffef54e3556ec5d593090adc34713b2e.html",
+            "sha256": "5a534e3e6ebc2d11ebbdcf04073c95deffef54e3556ec5d593090adc34713b2e",
+            "archived_bytes": 220990,
+            "body_truncated": false
+          }
+        },
+        {
+          "team_id": "DAL",
+          "team_references": [
+            "https://www.nfl.com/teams/dallas-cowboys"
+          ],
+          "date": "2026-10-28",
+          "category": "waivers",
+          "columns": [
+            "Cowboys Cowboys",
+            "--",
+            "10/28",
+            "DJ Rogers",
+            "",
+            "Terminated Via Waivers, all contracts"
+          ],
+          "player_reference": "https://www.nfl.com/players/dj-rogers/",
+          "source": {
+            "reference": "https://www.nfl.com/transactions/league/waivers/2026/10",
+            "retrieved_at": "2026-11-04T03:01:36.149469+00:00",
+            "resolved_reference": "https://www.nfl.com/transactions/league/waivers/2026/10",
+            "status_code": 200,
+            "archive_file": "C:\\Users\\tcase\\OneDrive\\Documents\\Case Cap\\CaseCapitalFootballBetting\\outputs\\gap-repair-dallas\\verified-run\\archive\\4e5fcb8c4ad6501d25f9fe5a70d0232325905a9b733cd6a9faef552def745bad.html",
+            "sha256": "4e5fcb8c4ad6501d25f9fe5a70d0232325905a9b733cd6a9faef552def745bad",
+            "archived_bytes": 247735,
+            "body_truncated": false
+          }
+        },
+        {
+          "team_id": "DAL",
+          "team_references": [
+            "https://www.nfl.com/teams/dallas-cowboys",
+            "https://www.nfl.com/teams/houston-texans"
+          ],
+          "date": "2026-10-28",
+          "category": "waivers",
+          "columns": [
+            "Cowboys Cowboys",
+            "Texans Texans",
+            "10/28",
+            "Emari Demercado",
+            "",
+            "Assigned via Waivers"
+          ],
+          "player_reference": "https://www.nfl.com/players/emari-demercado/",
+          "source": {
+            "reference": "https://www.nfl.com/transactions/league/waivers/2026/10",
+            "retrieved_at": "2026-11-04T03:01:36.149469+00:00",
+            "resolved_reference": "https://www.nfl.com/transactions/league/waivers/2026/10",
+            "status_code": 200,
+            "archive_file": "C:\\Users\\tcase\\OneDrive\\Documents\\Case Cap\\CaseCapitalFootballBetting\\outputs\\gap-repair-dallas\\verified-run\\archive\\4e5fcb8c4ad6501d25f9fe5a70d0232325905a9b733cd6a9faef552def745bad.html",
+            "sha256": "4e5fcb8c4ad6501d25f9fe5a70d0232325905a9b733cd6a9faef552def745bad",
+            "archived_bytes": 247735,
+            "body_truncated": false
+          }
+        },
+        {
+          "team_id": "DAL",
+          "team_references": [
+            "https://www.nfl.com/teams/dallas-cowboys",
+            "https://www.nfl.com/teams/dallas-cowboys"
+          ],
+          "date": "2026-10-27",
+          "category": "waivers",
+          "columns": [
+            "Cowboys Cowboys",
+            "Cowboys Cowboys",
+            "10/27",
+            "Emari Demercado",
+            "",
+            "Waived, No Recall"
+          ],
+          "player_reference": "https://www.nfl.com/players/emari-demercado/",
+          "source": {
+            "reference": "https://www.nfl.com/transactions/league/waivers/2026/10",
+            "retrieved_at": "2026-11-04T03:01:36.149469+00:00",
+            "resolved_reference": "https://www.nfl.com/transactions/league/waivers/2026/10",
+            "status_code": 200,
+            "archive_file": "C:\\Users\\tcase\\OneDrive\\Documents\\Case Cap\\CaseCapitalFootballBetting\\outputs\\gap-repair-dallas\\verified-run\\archive\\4e5fcb8c4ad6501d25f9fe5a70d0232325905a9b733cd6a9faef552def745bad.html",
+            "sha256": "4e5fcb8c4ad6501d25f9fe5a70d0232325905a9b733cd6a9faef552def745bad",
+            "archived_bytes": 247735,
+            "body_truncated": false
+          }
+        },
+        {
+          "team_id": "DAL",
+          "team_references": [
+            "https://www.nfl.com/teams/dallas-cowboys",
+            "https://www.nfl.com/teams/dallas-cowboys"
+          ],
+          "date": "2026-10-27",
+          "category": "waivers",
+          "columns": [
+            "Cowboys Cowboys",
+            "Cowboys Cowboys",
+            "10/27",
+            "DJ Rogers",
+            "",
+            "Waived, No Recall"
+          ],
+          "player_reference": "https://www.nfl.com/players/dj-rogers/",
+          "source": {
+            "reference": "https://www.nfl.com/transactions/league/waivers/2026/10",
+            "retrieved_at": "2026-11-04T03:01:36.149469+00:00",
+            "resolved_reference": "https://www.nfl.com/transactions/league/waivers/2026/10",
+            "status_code": 200,
+            "archive_file": "C:\\Users\\tcase\\OneDrive\\Documents\\Case Cap\\CaseCapitalFootballBetting\\outputs\\gap-repair-dallas\\verified-run\\archive\\4e5fcb8c4ad6501d25f9fe5a70d0232325905a9b733cd6a9faef552def745bad.html",
+            "sha256": "4e5fcb8c4ad6501d25f9fe5a70d0232325905a9b733cd6a9faef552def745bad",
+            "archived_bytes": 247735,
+            "body_truncated": false
+          }
+        },
+        {
+          "team_id": "DAL",
+          "team_references": [
+            "https://www.nfl.com/teams/dallas-cowboys"
+          ],
+          "date": "2026-10-12",
+          "category": "terminations",
+          "columns": [
+            "Cowboys Cowboys",
+            "--",
+            "10/12",
+            "Nick Leverett",
+            "",
+            "Terminated, Vested Veteran, all contracts"
+          ],
+          "player_reference": "https://www.nfl.com/players/nick-leverett/",
+          "source": {
+            "reference": "https://www.nfl.com/transactions/league/terminations/2026/10",
+            "retrieved_at": "2026-11-04T03:01:36.733457+00:00",
+            "resolved_reference": "https://www.nfl.com/transactions/league/terminations/2026/10",
+            "status_code": 200,
+            "archive_file": "C:\\Users\\tcase\\OneDrive\\Documents\\Case Cap\\CaseCapitalFootballBetting\\outputs\\gap-repair-dallas\\verified-run\\archive\\86513ca32c3e65fdd67aca834d355b1015abee49dd09336eefe49b254859ae97.html",
+            "sha256": "86513ca32c3e65fdd67aca834d355b1015abee49dd09336eefe49b254859ae97",
+            "archived_bytes": 236116,
+            "body_truncated": false
+          }
+        }
+      ],
+      "remaining_gap": "Publisher pagination exhaustion is not independent proof of complete history; empty or repeated windows remain unverified."
+    },
+    {
+      "kind": "DALLAS_TRANSACTION_RECOVERY",
+      "status": "PARTIAL_OFFICIAL_WINDOW",
+      "year": 2026,
+      "month": 11,
+      "team_id": "DAL",
+      "team_reference": "https://www.nfl.com/teams/dallas-cowboys",
+      "all_six_categories_complete": false,
+      "all_six_nonempty_windows_exhausted": false,
+      "season_history_complete": false,
+      "runtime_eligible": false,
+      "limits": {
+        "max_pages_per_category": 3,
+        "max_requests": 18,
+        "calendar_month_only": true,
+        "empty_windows_certify_nothing": true
+      },
+      "categories": [
+        {
+          "category": "trades",
+          "status": "PARTIAL",
+          "sources": [
+            {
+              "reference": "https://www.nfl.com/transactions/league/trades/2026/11",
+              "retrieved_at": "2026-11-04T03:01:37.657839+00:00",
+              "resolved_reference": "https://www.nfl.com/transactions/league/trades/2026/11",
+              "status_code": 200,
+              "archive_file": "C:\\Users\\tcase\\OneDrive\\Documents\\Case Cap\\CaseCapitalFootballBetting\\outputs\\gap-repair-dallas\\verified-run\\archive\\e9c5f5389e47b39b27a25c068e9beaffb0bc2e25c83eb4ae69ead5aca68331c0.html",
+              "sha256": "e9c5f5389e47b39b27a25c068e9beaffb0bc2e25c83eb4ae69ead5aca68331c0",
+              "archived_bytes": 210698,
+              "body_truncated": false
+            }
+          ],
+          "errors": [
+            "transaction_report_unverified"
+          ],
+          "pages": [],
+          "pagination_exhausted": false
+        },
+        {
+          "category": "signings",
+          "status": "OBSERVED_NONEMPTY_WINDOW_EXHAUSTED",
+          "sources": [
+            {
+              "reference": "https://www.nfl.com/transactions/league/signings/2026/11",
+              "retrieved_at": "2026-11-04T03:01:38.031533+00:00",
+              "resolved_reference": "https://www.nfl.com/transactions/league/signings/2026/11",
+              "status_code": 200,
+              "archive_file": "C:\\Users\\tcase\\OneDrive\\Documents\\Case Cap\\CaseCapitalFootballBetting\\outputs\\gap-repair-dallas\\verified-run\\archive\\cbd16d5b93aad9a7f564c1ce56411aae623744a8810097a4a4c3c769b8d1b6c4.html",
+              "sha256": "cbd16d5b93aad9a7f564c1ce56411aae623744a8810097a4a4c3c769b8d1b6c4",
+              "archived_bytes": 212136,
+              "body_truncated": false
+            }
+          ],
+          "errors": [],
+          "pages": [
+            {
+              "next_url": null,
+              "empty_marker_observed": false,
+              "scope": {
+                "year": 2026,
+                "month": 11,
+                "category": "signings",
+                "team_filter": "/teams/dallas-cowboys",
+                "publisher_team_scope": "league"
+              }
+            }
+          ],
+          "pagination_exhausted": true
+        },
+        {
+          "category": "reserve-list",
+          "status": "OBSERVED_NONEMPTY_WINDOW_EXHAUSTED",
+          "sources": [
+            {
+              "reference": "https://www.nfl.com/transactions/league/reserve-list/2026/11",
+              "retrieved_at": "2026-11-04T03:01:38.372603+00:00",
+              "resolved_reference": "https://www.nfl.com/transactions/league/reserve-list/2026/11",
+              "status_code": 200,
+              "archive_file": "C:\\Users\\tcase\\OneDrive\\Documents\\Case Cap\\CaseCapitalFootballBetting\\outputs\\gap-repair-dallas\\verified-run\\archive\\f9e06651156ef8db4c161598e8aaad45e02d87641bac988412e9b6790c650ca1.html",
+              "sha256": "f9e06651156ef8db4c161598e8aaad45e02d87641bac988412e9b6790c650ca1",
+              "archived_bytes": 233270,
+              "body_truncated": false
+            }
+          ],
+          "errors": [],
+          "pages": [
+            {
+              "next_url": null,
+              "empty_marker_observed": false,
+              "scope": {
+                "year": 2026,
+                "month": 11,
+                "category": "reserve-list",
+                "team_filter": "/teams/dallas-cowboys",
+                "publisher_team_scope": "league"
+              }
+            }
+          ],
+          "pagination_exhausted": true
+        },
+        {
+          "category": "waivers",
+          "status": "OBSERVED_NONEMPTY_WINDOW_EXHAUSTED",
+          "sources": [
+            {
+              "reference": "https://www.nfl.com/transactions/league/waivers/2026/11",
+              "retrieved_at": "2026-11-04T03:01:38.761289+00:00",
+              "resolved_reference": "https://www.nfl.com/transactions/league/waivers/2026/11",
+              "status_code": 200,
+              "archive_file": "C:\\Users\\tcase\\OneDrive\\Documents\\Case Cap\\CaseCapitalFootballBetting\\outputs\\gap-repair-dallas\\verified-run\\archive\\700c4badf17153c26cce0ecb24036fbadedfadc5a129395258c614d465b27889.html",
+              "sha256": "700c4badf17153c26cce0ecb24036fbadedfadc5a129395258c614d465b27889",
+              "archived_bytes": 231729,
+              "body_truncated": false
+            }
+          ],
+          "errors": [],
+          "pages": [
+            {
+              "next_url": null,
+              "empty_marker_observed": false,
+              "scope": {
+                "year": 2026,
+                "month": 11,
+                "category": "waivers",
+                "team_filter": "/teams/dallas-cowboys",
+                "publisher_team_scope": "league"
+              }
+            }
+          ],
+          "pagination_exhausted": true
+        },
+        {
+          "category": "terminations",
+          "status": "OBSERVED_NONEMPTY_WINDOW_EXHAUSTED",
+          "sources": [
+            {
+              "reference": "https://www.nfl.com/transactions/league/terminations/2026/11",
+              "retrieved_at": "2026-11-04T03:01:39.150392+00:00",
+              "resolved_reference": "https://www.nfl.com/transactions/league/terminations/2026/11",
+              "status_code": 200,
+              "archive_file": "C:\\Users\\tcase\\OneDrive\\Documents\\Case Cap\\CaseCapitalFootballBetting\\outputs\\gap-repair-dallas\\verified-run\\archive\\028abca8f3f6478f3eae6689825ccf94313f0c2548d92f52056365d972f45a66.html",
+              "sha256": "028abca8f3f6478f3eae6689825ccf94313f0c2548d92f52056365d972f45a66",
+              "archived_bytes": 217307,
+              "body_truncated": false
+            }
+          ],
+          "errors": [],
+          "pages": [
+            {
+              "next_url": null,
+              "empty_marker_observed": false,
+              "scope": {
+                "year": 2026,
+                "month": 11,
+                "category": "terminations",
+                "team_filter": "/teams/dallas-cowboys",
+                "publisher_team_scope": "league"
+              }
+            }
+          ],
+          "pagination_exhausted": true
+        },
+        {
+          "category": "other",
+          "status": "OBSERVED_NONEMPTY_WINDOW_EXHAUSTED",
+          "sources": [
+            {
+              "reference": "https://www.nfl.com/transactions/league/other/2026/11",
+              "retrieved_at": "2026-11-04T03:01:39.558367+00:00",
+              "resolved_reference": "https://www.nfl.com/transactions/league/other/2026/11",
+              "status_code": 200,
+              "archive_file": "C:\\Users\\tcase\\OneDrive\\Documents\\Case Cap\\CaseCapitalFootballBetting\\outputs\\gap-repair-dallas\\verified-run\\archive\\990e766036f40c69e04f2801775663d92623f31903322dd3d53f8771a30bcbf4.html",
+              "sha256": "990e766036f40c69e04f2801775663d92623f31903322dd3d53f8771a30bcbf4",
+              "archived_bytes": 217702,
+              "body_truncated": false
+            }
+          ],
+          "errors": [],
+          "pages": [
+            {
+              "next_url": null,
+              "empty_marker_observed": false,
+              "scope": {
+                "year": 2026,
+                "month": 11,
+                "category": "other",
+                "team_filter": "/teams/dallas-cowboys",
+                "publisher_team_scope": "league"
+              }
+            }
+          ],
+          "pagination_exhausted": true
+        }
+      ],
+      "rows": [],
+      "remaining_gap": "Publisher pagination exhaustion is not independent proof of complete history; empty or repeated windows remain unverified."
+    }
+  ],
+  "club_trackers": [
+    {
+      "reference": "https://www.dallascowboys.com/news/transactions-guard-signed-snowden-waived-injured",
+      "status": "PARTIAL_CLUB_NEWS",
+      "rows": [
+        {
+          "date": "2026-10-29",
+          "team_id": "DAL",
+          "team_reference": "https://www.dallascowboys.com",
+          "statement": "Opened DT Jonathan Bullard's 21-day practice window.",
+          "player_identity": "UNRESOLVED",
+          "table_row": 1,
+          "source": {
+            "reference": "https://www.dallascowboys.com/news/transactions-guard-signed-snowden-waived-injured",
+            "retrieved_at": "2026-11-04T03:01:39.907797+00:00",
+            "resolved_reference": "https://www.dallascowboys.com/news/transactions-guard-signed-snowden-waived-injured",
+            "status_code": 200,
+            "archive_file": "C:\\Users\\tcase\\OneDrive\\Documents\\Case Cap\\CaseCapitalFootballBetting\\outputs\\gap-repair-dallas\\verified-run\\archive\\420ad5adafb90551d71fe7ad894988b404ee29de95a445d3a89f4c6c294b8764.html",
+            "sha256": "420ad5adafb90551d71fe7ad894988b404ee29de95a445d3a89f4c6c294b8764",
+            "archived_bytes": 339367,
+            "body_truncated": false
+          }
+        },
+        {
+          "date": "2026-10-27",
+          "team_id": "DAL",
+          "team_reference": "https://www.dallascowboys.com",
+          "statement": "Waived/injured TE D.J. Rogers",
+          "player_identity": "UNRESOLVED",
+          "table_row": 2,
+          "source": {
+            "reference": "https://www.dallascowboys.com/news/transactions-guard-signed-snowden-waived-injured",
+            "retrieved_at": "2026-11-04T03:01:39.907797+00:00",
+            "resolved_reference": "https://www.dallascowboys.com/news/transactions-guard-signed-snowden-waived-injured",
+            "status_code": 200,
+            "archive_file": "C:\\Users\\tcase\\OneDrive\\Documents\\Case Cap\\CaseCapitalFootballBetting\\outputs\\gap-repair-dallas\\verified-run\\archive\\420ad5adafb90551d71fe7ad894988b404ee29de95a445d3a89f4c6c294b8764.html",
+            "sha256": "420ad5adafb90551d71fe7ad894988b404ee29de95a445d3a89f4c6c294b8764",
+            "archived_bytes": 339367,
+            "body_truncated": false
+          }
+        },
+        {
+          "date": "2026-10-27",
+          "team_id": "DAL",
+          "team_reference": "https://www.dallascowboys.com",
+          "statement": "Waived RB Emari Demercado",
+          "player_identity": "UNRESOLVED",
+          "table_row": 3,
+          "source": {
+            "reference": "https://www.dallascowboys.com/news/transactions-guard-signed-snowden-waived-injured",
+            "retrieved_at": "2026-11-04T03:01:39.907797+00:00",
+            "resolved_reference": "https://www.dallascowboys.com/news/transactions-guard-signed-snowden-waived-injured",
+            "status_code": 200,
+            "archive_file": "C:\\Users\\tcase\\OneDrive\\Documents\\Case Cap\\CaseCapitalFootballBetting\\outputs\\gap-repair-dallas\\verified-run\\archive\\420ad5adafb90551d71fe7ad894988b404ee29de95a445d3a89f4c6c294b8764.html",
+            "sha256": "420ad5adafb90551d71fe7ad894988b404ee29de95a445d3a89f4c6c294b8764",
+            "archived_bytes": 339367,
+            "body_truncated": false
+          }
+        },
+        {
+          "date": "2026-10-23",
+          "team_id": "DAL",
+          "team_reference": "https://www.dallascowboys.com",
+          "statement": "Opened S P.J. Locke's 21-day practice window.",
+          "player_identity": "UNRESOLVED",
+          "table_row": 4,
+          "source": {
+            "reference": "https://www.dallascowboys.com/news/transactions-guard-signed-snowden-waived-injured",
+            "retrieved_at": "2026-11-04T03:01:39.907797+00:00",
+            "resolved_reference": "https://www.dallascowboys.com/news/transactions-guard-signed-snowden-waived-injured",
+            "status_code": 200,
+            "archive_file": "C:\\Users\\tcase\\OneDrive\\Documents\\Case Cap\\CaseCapitalFootballBetting\\outputs\\gap-repair-dallas\\verified-run\\archive\\420ad5adafb90551d71fe7ad894988b404ee29de95a445d3a89f4c6c294b8764.html",
+            "sha256": "420ad5adafb90551d71fe7ad894988b404ee29de95a445d3a89f4c6c294b8764",
+            "archived_bytes": 339367,
+            "body_truncated": false
+          }
+        },
+        {
+          "date": "2026-10-22",
+          "team_id": "DAL",
+          "team_reference": "https://www.dallascowboys.com",
+          "statement": "Opened OLB Marist Liufau's 21-day practice window.",
+          "player_identity": "UNRESOLVED",
+          "table_row": 5,
+          "source": {
+            "reference": "https://www.dallascowboys.com/news/transactions-guard-signed-snowden-waived-injured",
+            "retrieved_at": "2026-11-04T03:01:39.907797+00:00",
+            "resolved_reference": "https://www.dallascowboys.com/news/transactions-guard-signed-snowden-waived-injured",
+            "status_code": 200,
+            "archive_file": "C:\\Users\\tcase\\OneDrive\\Documents\\Case Cap\\CaseCapitalFootballBetting\\outputs\\gap-repair-dallas\\verified-run\\archive\\420ad5adafb90551d71fe7ad894988b404ee29de95a445d3a89f4c6c294b8764.html",
+            "sha256": "420ad5adafb90551d71fe7ad894988b404ee29de95a445d3a89f4c6c294b8764",
+            "archived_bytes": 339367,
+            "body_truncated": false
+          }
+        },
+        {
+          "date": "2026-10-20",
+          "team_id": "DAL",
+          "team_reference": "https://www.dallascowboys.com",
+          "statement": "Signed QB Kyle Trask to the practice squad.",
+          "player_identity": "UNRESOLVED",
+          "table_row": 6,
+          "source": {
+            "reference": "https://www.dallascowboys.com/news/transactions-guard-signed-snowden-waived-injured",
+            "retrieved_at": "2026-11-04T03:01:39.907797+00:00",
+            "resolved_reference": "https://www.dallascowboys.com/news/transactions-guard-signed-snowden-waived-injured",
+            "status_code": 200,
+            "archive_file": "C:\\Users\\tcase\\OneDrive\\Documents\\Case Cap\\CaseCapitalFootballBetting\\outputs\\gap-repair-dallas\\verified-run\\archive\\420ad5adafb90551d71fe7ad894988b404ee29de95a445d3a89f4c6c294b8764.html",
+            "sha256": "420ad5adafb90551d71fe7ad894988b404ee29de95a445d3a89f4c6c294b8764",
+            "archived_bytes": 339367,
+            "body_truncated": false
+          }
+        },
+        {
+          "date": "2026-10-20",
+          "team_id": "DAL",
+          "team_reference": "https://www.dallascowboys.com",
+          "statement": "Signed S Juanyeh Thomas to the active roster. [ Link to story ]",
+          "player_identity": "UNRESOLVED",
+          "table_row": 7,
+          "source": {
+            "reference": "https://www.dallascowboys.com/news/transactions-guard-signed-snowden-waived-injured",
+            "retrieved_at": "2026-11-04T03:01:39.907797+00:00",
+            "resolved_reference": "https://www.dallascowboys.com/news/transactions-guard-signed-snowden-waived-injured",
+            "status_code": 200,
+            "archive_file": "C:\\Users\\tcase\\OneDrive\\Documents\\Case Cap\\CaseCapitalFootballBetting\\outputs\\gap-repair-dallas\\verified-run\\archive\\420ad5adafb90551d71fe7ad894988b404ee29de95a445d3a89f4c6c294b8764.html",
+            "sha256": "420ad5adafb90551d71fe7ad894988b404ee29de95a445d3a89f4c6c294b8764",
+            "archived_bytes": 339367,
+            "body_truncated": false
+          }
+        },
+        {
+          "date": "2026-10-20",
+          "team_id": "DAL",
+          "team_reference": "https://www.dallascowboys.com",
+          "statement": "Waived CB Caelen Carson.",
+          "player_identity": "UNRESOLVED",
+          "table_row": 8,
+          "source": {
+            "reference": "https://www.dallascowboys.com/news/transactions-guard-signed-snowden-waived-injured",
+            "retrieved_at": "2026-11-04T03:01:39.907797+00:00",
+            "resolved_reference": "https://www.dallascowboys.com/news/transactions-guard-signed-snowden-waived-injured",
+            "status_code": 200,
+            "archive_file": "C:\\Users\\tcase\\OneDrive\\Documents\\Case Cap\\CaseCapitalFootballBetting\\outputs\\gap-repair-dallas\\verified-run\\archive\\420ad5adafb90551d71fe7ad894988b404ee29de95a445d3a89f4c6c294b8764.html",
+            "sha256": "420ad5adafb90551d71fe7ad894988b404ee29de95a445d3a89f4c6c294b8764",
+            "archived_bytes": 339367,
+            "body_truncated": false
+          }
+        },
+        {
+          "date": "2026-10-12",
+          "team_id": "DAL",
+          "team_reference": "https://www.dallascowboys.com",
+          "statement": "Signed RB Emari Demercado to the active roster.",
+          "player_identity": "UNRESOLVED",
+          "table_row": 9,
+          "source": {
+            "reference": "https://www.dallascowboys.com/news/transactions-guard-signed-snowden-waived-injured",
+            "retrieved_at": "2026-11-04T03:01:39.907797+00:00",
+            "resolved_reference": "https://www.dallascowboys.com/news/transactions-guard-signed-snowden-waived-injured",
+            "status_code": 200,
+            "archive_file": "C:\\Users\\tcase\\OneDrive\\Documents\\Case Cap\\CaseCapitalFootballBetting\\outputs\\gap-repair-dallas\\verified-run\\archive\\420ad5adafb90551d71fe7ad894988b404ee29de95a445d3a89f4c6c294b8764.html",
+            "sha256": "420ad5adafb90551d71fe7ad894988b404ee29de95a445d3a89f4c6c294b8764",
+            "archived_bytes": 339367,
+            "body_truncated": false
+          }
+        },
+        {
+          "date": "2026-10-12",
+          "team_id": "DAL",
+          "team_reference": "https://www.dallascowboys.com",
+          "statement": "Waived OL Nick Leverett.",
+          "player_identity": "UNRESOLVED",
+          "table_row": 10,
+          "source": {
+            "reference": "https://www.dallascowboys.com/news/transactions-guard-signed-snowden-waived-injured",
+            "retrieved_at": "2026-11-04T03:01:39.907797+00:00",
+            "resolved_reference": "https://www.dallascowboys.com/news/transactions-guard-signed-snowden-waived-injured",
+            "status_code": 200,
+            "archive_file": "C:\\Users\\tcase\\OneDrive\\Documents\\Case Cap\\CaseCapitalFootballBetting\\outputs\\gap-repair-dallas\\verified-run\\archive\\420ad5adafb90551d71fe7ad894988b404ee29de95a445d3a89f4c6c294b8764.html",
+            "sha256": "420ad5adafb90551d71fe7ad894988b404ee29de95a445d3a89f4c6c294b8764",
+            "archived_bytes": 339367,
+            "body_truncated": false
+          }
+        },
+        {
+          "date": "2026-10-08",
+          "team_id": "DAL",
+          "team_reference": "https://www.dallascowboys.com",
+          "statement": "Waived RB Emari Demercado.",
+          "player_identity": "UNRESOLVED",
+          "table_row": 11,
+          "source": {
+            "reference": "https://www.dallascowboys.com/news/transactions-guard-signed-snowden-waived-injured",
+            "retrieved_at": "2026-11-04T03:01:39.907797+00:00",
+            "resolved_reference": "https://www.dallascowboys.com/news/transactions-guard-signed-snowden-waived-injured",
+            "status_code": 200,
+            "archive_file": "C:\\Users\\tcase\\OneDrive\\Documents\\Case Cap\\CaseCapitalFootballBetting\\outputs\\gap-repair-dallas\\verified-run\\archive\\420ad5adafb90551d71fe7ad894988b404ee29de95a445d3a89f4c6c294b8764.html",
+            "sha256": "420ad5adafb90551d71fe7ad894988b404ee29de95a445d3a89f4c6c294b8764",
+            "archived_bytes": 339367,
+            "body_truncated": false
+          }
+        },
+        {
+          "date": "2026-10-05",
+          "team_id": "DAL",
+          "team_reference": "https://www.dallascowboys.com",
+          "statement": "Moved G Tyler Smith to Reserve/Designated for Return [ Link to story ]",
+          "player_identity": "UNRESOLVED",
+          "table_row": 12,
+          "source": {
+            "reference": "https://www.dallascowboys.com/news/transactions-guard-signed-snowden-waived-injured",
+            "retrieved_at": "2026-11-04T03:01:39.907797+00:00",
+            "resolved_reference": "https://www.dallascowboys.com/news/transactions-guard-signed-snowden-waived-injured",
+            "status_code": 200,
+            "archive_file": "C:\\Users\\tcase\\OneDrive\\Documents\\Case Cap\\CaseCapitalFootballBetting\\outputs\\gap-repair-dallas\\verified-run\\archive\\420ad5adafb90551d71fe7ad894988b404ee29de95a445d3a89f4c6c294b8764.html",
+            "sha256": "420ad5adafb90551d71fe7ad894988b404ee29de95a445d3a89f4c6c294b8764",
+            "archived_bytes": 339367,
+            "body_truncated": false
+          }
+        },
+        {
+          "date": "2026-10-01",
+          "team_id": "DAL",
+          "team_reference": "https://www.dallascowboys.com",
+          "statement": "Acquired CB Joey Porter in a trade with Pittsburgh [ Link to story ]",
+          "player_identity": "UNRESOLVED",
+          "table_row": 13,
+          "source": {
+            "reference": "https://www.dallascowboys.com/news/transactions-guard-signed-snowden-waived-injured",
+            "retrieved_at": "2026-11-04T03:01:39.907797+00:00",
+            "resolved_reference": "https://www.dallascowboys.com/news/transactions-guard-signed-snowden-waived-injured",
+            "status_code": 200,
+            "archive_file": "C:\\Users\\tcase\\OneDrive\\Documents\\Case Cap\\CaseCapitalFootballBetting\\outputs\\gap-repair-dallas\\verified-run\\archive\\420ad5adafb90551d71fe7ad894988b404ee29de95a445d3a89f4c6c294b8764.html",
+            "sha256": "420ad5adafb90551d71fe7ad894988b404ee29de95a445d3a89f4c6c294b8764",
+            "archived_bytes": 339367,
+            "body_truncated": false
+          }
+        }
+      ],
+      "season_history_complete": false,
+      "runtime_eligible": false,
+      "errors": [],
+      "source": {
+        "reference": "https://www.dallascowboys.com/news/transactions-guard-signed-snowden-waived-injured",
+        "retrieved_at": "2026-11-04T03:01:39.907797+00:00",
+        "resolved_reference": "https://www.dallascowboys.com/news/transactions-guard-signed-snowden-waived-injured",
+        "status_code": 200,
+        "archive_file": "C:\\Users\\tcase\\OneDrive\\Documents\\Case Cap\\CaseCapitalFootballBetting\\outputs\\gap-repair-dallas\\verified-run\\archive\\420ad5adafb90551d71fe7ad894988b404ee29de95a445d3a89f4c6c294b8764.html",
+        "sha256": "420ad5adafb90551d71fe7ad894988b404ee29de95a445d3a89f4c6c294b8764",
+        "archived_bytes": 339367,
+        "body_truncated": false
+      },
+      "publication_label": "Oct 29, 2026 at 04:20 PM",
+      "reason": "Club labels these latest transactions; omissions and season completeness are unverified. Year inferred only within matching article year; no cross-year inference."
+    },
+    {
+      "reference": "https://www.dallascowboys.com/news/transactions-guard-signed-snowden-waived-injured",
+      "status": "PARTIAL_CLUB_NEWS",
+      "rows": [],
+      "season_history_complete": false,
+      "runtime_eligible": false,
+      "errors": [],
+      "source": {
+        "reference": "https://www.dallascowboys.com/news/transactions-guard-signed-snowden-waived-injured",
+        "retrieved_at": "2026-11-04T03:01:39.907797+00:00",
+        "resolved_reference": "https://www.dallascowboys.com/news/transactions-guard-signed-snowden-waived-injured",
+        "status_code": 200,
+        "archive_file": "C:\\Users\\tcase\\OneDrive\\Documents\\Case Cap\\CaseCapitalFootballBetting\\outputs\\gap-repair-dallas\\verified-run\\archive\\420ad5adafb90551d71fe7ad894988b404ee29de95a445d3a89f4c6c294b8764.html",
+        "sha256": "420ad5adafb90551d71fe7ad894988b404ee29de95a445d3a89f4c6c294b8764",
+        "archived_bytes": 339367,
+        "body_truncated": false
+      },
+      "publication_label": "Oct 29, 2026 at 04:20 PM",
+      "reason": "Club labels these latest transactions; omissions and season completeness are unverified. Year inferred only within matching article year; no cross-year inference."
+    }
+  ],
+  "season_history_complete": false,
+  "runtime_state_changed": false
+}

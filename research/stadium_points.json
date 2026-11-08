@@ -1,0 +1,217 @@
+{
+  "coordinate_source": "https://raw.githubusercontent.com/greerreNFL/stadiums/main/data/stadiums.csv",
+  "coordinate_source_sha256": "c73bc82fdcb5abe9018227a61bfe91a562d7bf1f10214ee34f1a480d5bcd519c",
+  "note": "Point coordinates are third-party candidates bound to ESPN venue ID and name; roof state must be checked separately.",
+  "venues": {
+    "11938": {
+      "name": "Highmark Stadium",
+      "latitude": 42.7737531,
+      "longitude": -78.786954,
+      "coordinate_source_name": "Highmark Stadium",
+      "roof_type_reference": "Outdoors"
+    },
+    "3493": {
+      "name": "Caesars Superdome",
+      "latitude": 29.9511425,
+      "longitude": -90.0810779,
+      "coordinate_source_name": "Caesars Superdome",
+      "roof_type_reference": "Dome"
+    },
+    "3622": {
+      "name": "Arrowhead Stadium",
+      "latitude": 39.0489275,
+      "longitude": -94.4839962,
+      "coordinate_source_name": "GEHA Field at Arrowhead Stadium",
+      "roof_type_reference": "Outdoors"
+    },
+    "3628": {
+      "name": "Bank of America Stadium",
+      "latitude": 35.2258152,
+      "longitude": -80.8528376,
+      "coordinate_source_name": "Bank of America Stadium",
+      "roof_type_reference": "Outdoors"
+    },
+    "3673": {
+      "name": "Lumen Field",
+      "latitude": 47.5951513,
+      "longitude": -122.3316259,
+      "coordinate_source_name": "Lumen Field",
+      "roof_type_reference": "Outdoors"
+    },
+    "3679": {
+      "name": "Huntington Bank Field",
+      "latitude": 41.5060371,
+      "longitude": -81.699586,
+      "coordinate_source_name": "Huntington Bank Field",
+      "roof_type_reference": "Outdoors"
+    },
+    "3687": {
+      "name": "AT&T Stadium",
+      "latitude": 32.7479723,
+      "longitude": -97.0928461,
+      "coordinate_source_name": "AT&T Stadium",
+      "roof_type_reference": "Outdoors"
+    },
+    "3712": {
+      "name": "EverBank Stadium",
+      "latitude": 30.3239164,
+      "longitude": -81.6373486,
+      "coordinate_source_name": "EverBank Stadium",
+      "roof_type_reference": "Outdoors"
+    },
+    "3719": {
+      "name": "Northwest Stadium",
+      "latitude": 38.907703,
+      "longitude": -76.8645083,
+      "coordinate_source_name": "Northwest Stadium",
+      "roof_type_reference": "Outdoors"
+    },
+    "3727": {
+      "name": "Ford Field",
+      "latitude": 42.3401334,
+      "longitude": -83.0456783,
+      "coordinate_source_name": "Ford Field",
+      "roof_type_reference": "Dome"
+    },
+    "3738": {
+      "name": "Gillette Stadium",
+      "latitude": 42.0909217,
+      "longitude": -71.2643321,
+      "coordinate_source_name": "Gillette Stadium",
+      "roof_type_reference": "Outdoors"
+    },
+    "3752": {
+      "name": "Acrisure Stadium",
+      "latitude": 40.4467883,
+      "longitude": -80.0157692,
+      "coordinate_source_name": "Acrisure Stadium",
+      "roof_type_reference": "Outdoors"
+    },
+    "3798": {
+      "name": "Lambeau Field",
+      "latitude": 44.5014769,
+      "longitude": -88.0621617,
+      "coordinate_source_name": "Lambeau Field",
+      "roof_type_reference": "Outdoors"
+    },
+    "3806": {
+      "name": "Lincoln Financial Field",
+      "latitude": 39.9007914,
+      "longitude": -75.1674645,
+      "coordinate_source_name": "Lincoln Financial Field",
+      "roof_type_reference": "Outdoors"
+    },
+    "3810": {
+      "name": "Nissan Stadium",
+      "latitude": 36.1664774,
+      "longitude": -86.7712938,
+      "coordinate_source_name": "Nissan Stadium",
+      "roof_type_reference": "Outdoors"
+    },
+    "3812": {
+      "name": "Lucas Oil Stadium",
+      "latitude": 39.7602037,
+      "longitude": -86.1638068,
+      "coordinate_source_name": "Lucas Oil Stadium",
+      "roof_type_reference": "Outdoors"
+    },
+    "3814": {
+      "name": "M&T Bank Stadium",
+      "latitude": 39.277958,
+      "longitude": -76.6227221,
+      "coordinate_source_name": "M&T Bank Stadium",
+      "roof_type_reference": "Outdoors"
+    },
+    "3839": {
+      "name": "MetLife Stadium",
+      "latitude": 40.813507465,
+      "longitude": -74.074342406,
+      "coordinate_source_name": "MetLife Stadium",
+      "roof_type_reference": "Outdoors"
+    },
+    "3874": {
+      "name": "Paycor Stadium",
+      "latitude": 39.0954306,
+      "longitude": -84.5160435,
+      "coordinate_source_name": "Paycor Stadium",
+      "roof_type_reference": "Outdoors"
+    },
+    "3886": {
+      "name": "Raymond James Stadium",
+      "latitude": 27.9759691,
+      "longitude": -82.503356,
+      "coordinate_source_name": "Raymond James Stadium",
+      "roof_type_reference": "Outdoors"
+    },
+    "3891": {
+      "name": "Reliant Stadium",
+      "latitude": 29.6849239,
+      "longitude": -95.41082,
+      "coordinate_source_name": "Reliant Stadium",
+      "roof_type_reference": "Outdoors"
+    },
+    "3933": {
+      "name": "Soldier Field",
+      "latitude": 41.8624598,
+      "longitude": -87.6167762,
+      "coordinate_source_name": "Soldier Field",
+      "roof_type_reference": "Outdoors"
+    },
+    "3937": {
+      "name": "Empower Field at Mile High",
+      "latitude": 39.7439402,
+      "longitude": -105.0201065,
+      "coordinate_source_name": "Empower Field at Mile High",
+      "roof_type_reference": "Outdoors"
+    },
+    "3948": {
+      "name": "Hard Rock Stadium",
+      "latitude": 25.9579623,
+      "longitude": -80.2388423,
+      "coordinate_source_name": "Hard Rock Stadium",
+      "roof_type_reference": "Outdoors"
+    },
+    "3970": {
+      "name": "State Farm Stadium",
+      "latitude": 33.5277555,
+      "longitude": -112.2625948,
+      "coordinate_source_name": "State Farm Stadium",
+      "roof_type_reference": "Outdoors"
+    },
+    "4738": {
+      "name": "Levi's Stadium",
+      "latitude": 37.4031837,
+      "longitude": -121.9698094,
+      "coordinate_source_name": "Levi's Stadium",
+      "roof_type_reference": "Outdoors"
+    },
+    "5239": {
+      "name": "U.S. Bank Stadium",
+      "latitude": 44.9736273,
+      "longitude": -93.2574111,
+      "coordinate_source_name": "U.S. Bank Stadium",
+      "roof_type_reference": "Dome"
+    },
+    "5348": {
+      "name": "Mercedes-Benz Stadium",
+      "latitude": 33.7555052,
+      "longitude": -84.4008484,
+      "coordinate_source_name": "Mercedes-Benz Stadium",
+      "roof_type_reference": "Outdoors"
+    },
+    "6501": {
+      "name": "Allegiant Stadium",
+      "latitude": 36.0908515,
+      "longitude": -115.1833441,
+      "coordinate_source_name": "Allegiant Stadium",
+      "roof_type_reference": "Dome"
+    },
+    "7065": {
+      "name": "SoFi Stadium",
+      "latitude": 33.953485,
+      "longitude": -118.3390307,
+      "coordinate_source_name": "SoFi Stadium",
+      "roof_type_reference": "Dome"
+    }
+  }
+}

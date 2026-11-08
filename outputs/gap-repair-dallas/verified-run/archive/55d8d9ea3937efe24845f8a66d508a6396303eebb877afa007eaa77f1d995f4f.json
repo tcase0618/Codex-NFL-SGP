@@ -1,0 +1,11 @@
+{
+  "reference": "https://www.dallascowboys.com/team/transactions/2026",
+  "retrieved_at": "2026-11-04T03:01:33.825160+00:00",
+  "resolved_reference": "https://www.dallascowboys.com/team/transactions/2026",
+  "status_code": 404,
+  "archive_file": "C:\\Users\\tcase\\OneDrive\\Documents\\Case Cap\\CaseCapitalFootballBetting\\outputs\\gap-repair-dallas\\verified-run\\archive\\b91859e3799ec172f82fd56b6d99e8e867fea9ed41defda38f4c34095c2bdc06.html",
+  "sha256": "b91859e3799ec172f82fd56b6d99e8e867fea9ed41defda38f4c34095c2bdc06",
+  "archived_bytes": 335641,
+  "body_truncated": false,
+  "error": "http_404"
+}

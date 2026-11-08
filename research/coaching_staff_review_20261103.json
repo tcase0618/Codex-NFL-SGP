@@ -1,0 +1,450 @@
+{
+  "BUF": {
+    "head_coach": {
+      "name": "Joe Brady",
+      "title": "Head Coach"
+    },
+    "offensive_coordinator": {
+      "name": "Pete Carmichael",
+      "title": "Offensive Coordinator"
+    },
+    "defensive_coordinator": {
+      "name": "Jim Leonhard",
+      "title": "Defensive Coordinator"
+    }
+  },
+  "MIA": {
+    "head_coach": {
+      "name": "Jeff Hafley",
+      "title": "Head Coach"
+    },
+    "offensive_coordinator": {
+      "name": "Bobby Slowik",
+      "title": "Offensive Coordinator"
+    },
+    "defensive_coordinator": {
+      "name": "Sean Duggan",
+      "title": "Defensive Coordinator"
+    }
+  },
+  "NE": {
+    "head_coach": {
+      "name": "Mike Vrabel",
+      "title": "Head Coach"
+    },
+    "offensive_coordinator": {
+      "name": "Josh McDaniels",
+      "title": "Offensive Coordinator"
+    },
+    "defensive_coordinator": {
+      "name": "Zak Kuhr",
+      "title": "Defensive Coordinator"
+    }
+  },
+  "NYJ": {
+    "head_coach": {
+      "name": "Aaron Glenn",
+      "title": "Head Coach"
+    },
+    "defensive_coordinator": {
+      "name": "Brian Duker",
+      "title": "Defensive Coordinator"
+    },
+    "offensive_coordinator": {
+      "name": "Frank Reich",
+      "title": "Offensive Coordinator"
+    }
+  },
+  "BAL": {
+    "head_coach": {
+      "name": "Jesse Minter",
+      "title": "Head Coach"
+    },
+    "offensive_coordinator": {
+      "name": "Declan Doyle",
+      "title": "Offensive Coordinator"
+    },
+    "defensive_coordinator": {
+      "name": "Anthony Weaver",
+      "title": "Defensive Coordinator"
+    }
+  },
+  "CIN": {
+    "head_coach": {
+      "name": "Zac Taylor",
+      "title": "Head Coach"
+    },
+    "offensive_coordinator": {
+      "name": "Dan Pitcher",
+      "title": "Offensive Coordinator"
+    },
+    "defensive_coordinator": {
+      "name": "Al Golden",
+      "title": "Defensive Coordinator"
+    }
+  },
+  "CLE": {
+    "head_coach": {
+      "name": "Todd Monken",
+      "title": "Head Coach"
+    },
+    "defensive_coordinator": {
+      "name": "Mike Rutenberg",
+      "title": "Defensive Coordinator"
+    },
+    "offensive_coordinator": {
+      "name": "Travis Switzer",
+      "title": "Offensive Coordinator"
+    }
+  },
+  "PIT": {
+    "head_coach": {
+      "name": "Mike McCarthy",
+      "title": "Head Coach"
+    },
+    "offensive_coordinator": {
+      "name": "Brian Angelichio",
+      "title": "Offensive Coordinator"
+    },
+    "defensive_coordinator": {
+      "name": "Patrick Graham",
+      "title": "Defensive Coordinator"
+    }
+  },
+  "HOU": {
+    "head_coach": {
+      "name": "DeMeco Ryans",
+      "title": "Head Coach"
+    },
+    "defensive_coordinator": {
+      "name": "Matt Burke",
+      "title": "Defensive Coordinator"
+    },
+    "offensive_coordinator": {
+      "name": "Nick Caley",
+      "title": "Offensive Coordinator"
+    }
+  },
+  "IND": {
+    "head_coach": {
+      "name": "Shane Steichen",
+      "title": "Head Coach"
+    },
+    "defensive_coordinator": {
+      "name": "Lou Anarumo",
+      "title": "Defensive Coordinator"
+    },
+    "offensive_coordinator": {
+      "name": "Jim Bob Cooter",
+      "title": "Offensive Coordinator"
+    }
+  },
+  "JAX": {
+    "head_coach": {
+      "name": "Liam Coen",
+      "title": "Head Coach"
+    },
+    "offensive_coordinator": {
+      "name": "Grant Udinski",
+      "title": "Offensive Coordinator"
+    },
+    "defensive_coordinator": {
+      "name": "Anthony Campanile",
+      "title": "Defensive Coordinator"
+    }
+  },
+  "TEN": {
+    "head_coach": {
+      "name": "Robert Saleh",
+      "title": "Head Coach"
+    },
+    "offensive_coordinator": {
+      "name": "Brian Daboll",
+      "title": "Offensive Coordinator"
+    },
+    "defensive_coordinator": {
+      "name": "Gus Bradley",
+      "title": "Defensive Coordinator"
+    }
+  },
+  "DEN": {
+    "head_coach": {
+      "name": "Sean Payton",
+      "title": "Head Coach"
+    },
+    "offensive_coordinator": {
+      "name": "Davis Webb",
+      "title": "Offensive Coordinator"
+    },
+    "defensive_coordinator": {
+      "name": "Vance Joseph",
+      "title": "Defensive Coordinator"
+    }
+  },
+  "KC": {
+    "head_coach": {
+      "name": "Andy Reid",
+      "title": "Head Coach"
+    },
+    "offensive_coordinator": {
+      "name": "Eric Bieniemy",
+      "title": "Offensive Coordinator"
+    },
+    "defensive_coordinator": {
+      "name": "Steve Spagnuolo",
+      "title": "Defensive Coordinator"
+    }
+  },
+  "LV": {
+    "head_coach": {
+      "name": "Klint Kubiak",
+      "title": "Head Coach"
+    },
+    "offensive_coordinator": {
+      "name": "Andrew Janocko",
+      "title": "Offensive Coordinator"
+    },
+    "defensive_coordinator": {
+      "name": "Rob Leonard",
+      "title": "Defensive Coordinator"
+    }
+  },
+  "LAC": {
+    "head_coach": {
+      "name": "Jim Harbaugh",
+      "title": "Head Coach"
+    },
+    "defensive_coordinator": {
+      "name": "Chris O\u2019Leary",
+      "title": "Defensive Coordinator"
+    },
+    "offensive_coordinator": {
+      "name": "Mike McDaniel",
+      "title": "Offensive Coordinator"
+    }
+  },
+  "DAL": {
+    "head_coach": {
+      "name": "Brian Schottenheimer",
+      "title": "Head Coach"
+    },
+    "offensive_coordinator": {
+      "name": "Klayton Adams",
+      "title": "Offensive Coordinator"
+    },
+    "defensive_coordinator": {
+      "name": "Christian Parker",
+      "title": "Defensive Coordinator"
+    }
+  },
+  "NYG": {
+    "head_coach": {
+      "name": "John Harbaugh",
+      "title": "Head Coach"
+    },
+    "offensive_coordinator": {
+      "name": "Matt Nagy",
+      "title": "Offensive Coordinator"
+    },
+    "defensive_coordinator": {
+      "name": "Dennard Wilson",
+      "title": "Defensive Coordinator"
+    }
+  },
+  "PHI": {
+    "head_coach": {
+      "name": "Nick Sirianni",
+      "title": "Head Coach"
+    },
+    "defensive_coordinator": {
+      "name": "Vic Fangio",
+      "title": "Defensive Coordinator"
+    },
+    "offensive_coordinator": {
+      "name": "Sean Mannion",
+      "title": "Offensive Coordinator"
+    }
+  },
+  "WSH": {
+    "head_coach": {
+      "name": "Dan Quinn",
+      "title": "Head Coach"
+    },
+    "offensive_coordinator": {
+      "name": "David Blough",
+      "title": "Offensive coordinator"
+    },
+    "defensive_coordinator": {
+      "name": "Daronte Jones",
+      "title": "Defensive Coordinator"
+    }
+  },
+  "CHI": {
+    "head_coach": {
+      "name": "Ben Johnson",
+      "title": "Head Coach"
+    },
+    "defensive_coordinator": {
+      "name": "Dennis Allen",
+      "title": "Defensive Coordinator"
+    },
+    "offensive_coordinator": {
+      "name": "Press Taylor",
+      "title": "Offensive Coordinator"
+    }
+  },
+  "DET": {
+    "head_coach": {
+      "name": "Dan Campbell",
+      "title": "Head Coach"
+    },
+    "offensive_coordinator": {
+      "name": "Drew Petzing",
+      "title": "Offensive Coordinator"
+    },
+    "defensive_coordinator": {
+      "name": "Kelvin Sheppard",
+      "title": "Defensive Coordinator"
+    }
+  },
+  "GB": {
+    "head_coach": {
+      "name": "Matt LaFleur",
+      "title": "Head Coach"
+    },
+    "offensive_coordinator": {
+      "name": "Adam Stenavich",
+      "title": "Offensive Coordinator"
+    },
+    "defensive_coordinator": {
+      "name": "Jonathan Gannon",
+      "title": "Defensive Coordinator"
+    }
+  },
+  "MIN": {
+    "head_coach": {
+      "name": "Kevin O'Connell",
+      "title": "Head Coach"
+    },
+    "defensive_coordinator": {
+      "name": "Brian Flores",
+      "title": "Defensive Coordinator"
+    },
+    "offensive_coordinator": {
+      "name": "Wes Phillips",
+      "title": "Offensive Coordinator"
+    }
+  },
+  "ATL": {
+    "head_coach": {
+      "name": "Kevin Stefanski",
+      "title": "Head Coach"
+    },
+    "offensive_coordinator": {
+      "name": "Tommy Rees",
+      "title": "Offensive Coordinator"
+    },
+    "defensive_coordinator": {
+      "name": "Jeff Ulbrich",
+      "title": "Defensive Coordinator"
+    }
+  },
+  "CAR": {
+    "head_coach": {
+      "name": "Dave Canales",
+      "title": "Head Coach"
+    },
+    "offensive_coordinator": {
+      "name": "Brad Idzik",
+      "title": "Offensive Coordinator"
+    },
+    "defensive_coordinator": {
+      "name": "Todd Wash",
+      "title": "Interim defensive coordinator"
+    }
+  },
+  "NO": {
+    "head_coach": {
+      "name": "Kellen Moore",
+      "title": "Head Coach"
+    },
+    "offensive_coordinator": {
+      "name": "Doug Nussmeier",
+      "title": "Offensive Coordinator"
+    },
+    "defensive_coordinator": {
+      "name": "Brandon Staley",
+      "title": "Defensive Coordinator"
+    }
+  },
+  "TB": {
+    "head_coach": {
+      "name": "Todd Bowles",
+      "title": "Head Coach"
+    },
+    "offensive_coordinator": {
+      "name": "Zac Robinson",
+      "title": "Offensive Coordinator"
+    },
+    "defensive_coordinator": {
+      "name": null,
+      "title": null
+    }
+  },
+  "ARI": {
+    "head_coach": {
+      "name": "Mike LaFleur",
+      "title": "Head Coach"
+    },
+    "defensive_coordinator": {
+      "name": "Nick Rallis",
+      "title": "Defensive Coordinator"
+    },
+    "offensive_coordinator": {
+      "name": "Nathaniel Hackett",
+      "title": "Offensive Coordinator"
+    }
+  },
+  "LAR": {
+    "head_coach": {
+      "name": "Sean McVay",
+      "title": "Head Coach"
+    },
+    "offensive_coordinator": {
+      "name": "Nate Scheelhaase",
+      "title": "Offensive Coordinator"
+    },
+    "defensive_coordinator": {
+      "name": "Chris Shula",
+      "title": "Defensive Coordinator"
+    }
+  },
+  "SF": {
+    "head_coach": {
+      "name": "Kyle Shanahan",
+      "title": "Head Coach"
+    },
+    "defensive_coordinator": {
+      "name": "Raheem Morris",
+      "title": "Defensive Coordinator"
+    },
+    "offensive_coordinator": {
+      "name": "Klay Kubiak",
+      "title": "Offensive Coordinator"
+    }
+  },
+  "SEA": {
+    "head_coach": {
+      "name": "Mike Macdonald",
+      "title": "Head Coach"
+    },
+    "offensive_coordinator": {
+      "name": "Brian Fleury",
+      "title": "Offensive Coordinator"
+    },
+    "defensive_coordinator": {
+      "name": "Aden Durde",
+      "title": "Defensive Coordinator"
+    }
+  }
+}

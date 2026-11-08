@@ -1,0 +1,552 @@
+[
+  {
+    "team": "HOU",
+    "content_sha256": "33312aed251fc2958a3f6dcca08e73f96d9c104d26611e9a5bf22e7433456e14",
+    "reference": "https://static.clubs.nfl.com/image/upload/texans/do1m64kvqozyj8cvyqdr",
+    "reviewed_at": "2026-11-03T14:41:02.626962+00:00",
+    "chart_label_date": "2026-10-20",
+    "method": "Visual transcription of downloaded official chart; date label is not archive proof",
+    "rows": [
+      {
+        "player": "C.J. Stroud",
+        "position": "QB",
+        "depth": 1,
+        "alignment_row": "Offense:0",
+        "section": "Offense",
+        "table_index": null,
+        "player_reference": null
+      },
+      {
+        "player": "Davis Mills",
+        "position": "QB",
+        "depth": 2,
+        "alignment_row": "Offense:0",
+        "section": "Offense",
+        "table_index": null,
+        "player_reference": null
+      },
+      {
+        "player": "David Montgomery",
+        "position": "RB",
+        "depth": 1,
+        "alignment_row": "Offense:1",
+        "section": "Offense",
+        "table_index": null,
+        "player_reference": null
+      },
+      {
+        "player": "Woody Marks",
+        "position": "RB",
+        "depth": 2,
+        "alignment_row": "Offense:1",
+        "section": "Offense",
+        "table_index": null,
+        "player_reference": null
+      },
+      {
+        "player": "Dare Ogunbowale",
+        "position": "RB",
+        "depth": 3,
+        "alignment_row": "Offense:1",
+        "section": "Offense",
+        "table_index": null,
+        "player_reference": null
+      },
+      {
+        "player": "Nico Collins",
+        "position": "WR",
+        "depth": 1,
+        "alignment_row": "Offense:2",
+        "section": "Offense",
+        "table_index": null,
+        "player_reference": null
+      },
+      {
+        "player": "Marvin Harrison Jr.",
+        "position": "WR",
+        "depth": 2,
+        "alignment_row": "Offense:2",
+        "section": "Offense",
+        "table_index": null,
+        "player_reference": null
+      },
+      {
+        "player": "Kayshon Boutte",
+        "position": "WR",
+        "depth": 1,
+        "alignment_row": "Offense:3",
+        "section": "Offense",
+        "table_index": null,
+        "player_reference": null
+      },
+      {
+        "player": "Jaylin Noel",
+        "position": "WR",
+        "depth": 2,
+        "alignment_row": "Offense:3",
+        "section": "Offense",
+        "table_index": null,
+        "player_reference": null
+      },
+      {
+        "player": "Xavier Hutchinson",
+        "position": "WR",
+        "depth": 1,
+        "alignment_row": "Offense:4",
+        "section": "Offense",
+        "table_index": null,
+        "player_reference": null
+      },
+      {
+        "player": "Dalton Schultz",
+        "position": "TE",
+        "depth": 1,
+        "alignment_row": "Offense:5",
+        "section": "Offense",
+        "table_index": null,
+        "player_reference": null
+      },
+      {
+        "player": "Foster Moreau",
+        "position": "TE",
+        "depth": 2,
+        "alignment_row": "Offense:5",
+        "section": "Offense",
+        "table_index": null,
+        "player_reference": null
+      },
+      {
+        "player": "Cade Stover",
+        "position": "TE",
+        "depth": 3,
+        "alignment_row": "Offense:5",
+        "section": "Offense",
+        "table_index": null,
+        "player_reference": null
+      },
+      {
+        "player": "Brevin Jordan",
+        "position": "TE",
+        "depth": 4,
+        "alignment_row": "Offense:5",
+        "section": "Offense",
+        "table_index": null,
+        "player_reference": null
+      },
+      {
+        "player": "Marlin Klein",
+        "position": "TE",
+        "depth": 5,
+        "alignment_row": "Offense:5",
+        "section": "Offense",
+        "table_index": null,
+        "player_reference": null
+      },
+      {
+        "player": "Aireontae Ersery",
+        "position": "LT",
+        "depth": 1,
+        "alignment_row": "Offense:6",
+        "section": "Offense",
+        "table_index": null,
+        "player_reference": null
+      },
+      {
+        "player": "Blake Fisher",
+        "position": "LT",
+        "depth": 2,
+        "alignment_row": "Offense:6",
+        "section": "Offense",
+        "table_index": null,
+        "player_reference": null
+      },
+      {
+        "player": "Nate Thomas",
+        "position": "LT",
+        "depth": 3,
+        "alignment_row": "Offense:6",
+        "section": "Offense",
+        "table_index": null,
+        "player_reference": null
+      },
+      {
+        "player": "Keylan Rutledge",
+        "position": "LG",
+        "depth": 1,
+        "alignment_row": "Offense:7",
+        "section": "Offense",
+        "table_index": null,
+        "player_reference": null
+      },
+      {
+        "player": "Wyatt Teller",
+        "position": "LG",
+        "depth": 2,
+        "alignment_row": "Offense:7",
+        "section": "Offense",
+        "table_index": null,
+        "player_reference": null
+      },
+      {
+        "player": "Evan Brown",
+        "position": "C",
+        "depth": 1,
+        "alignment_row": "Offense:8",
+        "section": "Offense",
+        "table_index": null,
+        "player_reference": null
+      },
+      {
+        "player": "Jake Andrews",
+        "position": "C",
+        "depth": 2,
+        "alignment_row": "Offense:8",
+        "section": "Offense",
+        "table_index": null,
+        "player_reference": null
+      },
+      {
+        "player": "Ed Ingram",
+        "position": "RG",
+        "depth": 1,
+        "alignment_row": "Offense:9",
+        "section": "Offense",
+        "table_index": null,
+        "player_reference": null
+      },
+      {
+        "player": "Febechi Nwaiwu",
+        "position": "RG",
+        "depth": 2,
+        "alignment_row": "Offense:9",
+        "section": "Offense",
+        "table_index": null,
+        "player_reference": null
+      },
+      {
+        "player": "Trent Brown",
+        "position": "RT",
+        "depth": 1,
+        "alignment_row": "Offense:10",
+        "section": "Offense",
+        "table_index": null,
+        "player_reference": null
+      },
+      {
+        "player": "Braden Smith",
+        "position": "RT",
+        "depth": 2,
+        "alignment_row": "Offense:10",
+        "section": "Offense",
+        "table_index": null,
+        "player_reference": null
+      },
+      {
+        "player": "Will Anderson Jr.",
+        "position": "DE",
+        "depth": 1,
+        "alignment_row": "Defense:0",
+        "section": "Defense",
+        "table_index": null,
+        "player_reference": null
+      },
+      {
+        "player": "Dominique Robinson",
+        "position": "DE",
+        "depth": 2,
+        "alignment_row": "Defense:0",
+        "section": "Defense",
+        "table_index": null,
+        "player_reference": null
+      },
+      {
+        "player": "Sebastian Harch",
+        "position": "DE",
+        "depth": 3,
+        "alignment_row": "Defense:0",
+        "section": "Defense",
+        "table_index": null,
+        "player_reference": null
+      },
+      {
+        "player": "Tommy Togiai",
+        "position": "DT",
+        "depth": 1,
+        "alignment_row": "Defense:1",
+        "section": "Defense",
+        "table_index": null,
+        "player_reference": null
+      },
+      {
+        "player": "Logan Hall",
+        "position": "DT",
+        "depth": 2,
+        "alignment_row": "Defense:1",
+        "section": "Defense",
+        "table_index": null,
+        "player_reference": null
+      },
+      {
+        "player": "Jaden Crumedy",
+        "position": "DT",
+        "depth": 3,
+        "alignment_row": "Defense:1",
+        "section": "Defense",
+        "table_index": null,
+        "player_reference": null
+      },
+      {
+        "player": "Sheldon Rankins",
+        "position": "DT",
+        "depth": 1,
+        "alignment_row": "Defense:2",
+        "section": "Defense",
+        "table_index": null,
+        "player_reference": null
+      },
+      {
+        "player": "Kayden McDonald",
+        "position": "DT",
+        "depth": 2,
+        "alignment_row": "Defense:2",
+        "section": "Defense",
+        "table_index": null,
+        "player_reference": null
+      },
+      {
+        "player": "Danielle Hunter",
+        "position": "DE",
+        "depth": 1,
+        "alignment_row": "Defense:3",
+        "section": "Defense",
+        "table_index": null,
+        "player_reference": null
+      },
+      {
+        "player": "Jadeveon Clowney",
+        "position": "DE",
+        "depth": 2,
+        "alignment_row": "Defense:3",
+        "section": "Defense",
+        "table_index": null,
+        "player_reference": null
+      },
+      {
+        "player": "Azeez Al-Shaair",
+        "position": "LB",
+        "depth": 1,
+        "alignment_row": "Defense:4",
+        "section": "Defense",
+        "table_index": null,
+        "player_reference": null
+      },
+      {
+        "player": "Wade Woodaz",
+        "position": "LB",
+        "depth": 2,
+        "alignment_row": "Defense:4",
+        "section": "Defense",
+        "table_index": null,
+        "player_reference": null
+      },
+      {
+        "player": "Jamal Hill",
+        "position": "LB",
+        "depth": 3,
+        "alignment_row": "Defense:4",
+        "section": "Defense",
+        "table_index": null,
+        "player_reference": null
+      },
+      {
+        "player": "Henry To\u2019oTo\u2019o",
+        "position": "LB",
+        "depth": 1,
+        "alignment_row": "Defense:5",
+        "section": "Defense",
+        "table_index": null,
+        "player_reference": null
+      },
+      {
+        "player": "Jake Hansen",
+        "position": "LB",
+        "depth": 2,
+        "alignment_row": "Defense:5",
+        "section": "Defense",
+        "table_index": null,
+        "player_reference": null
+      },
+      {
+        "player": "Derek Stingley Jr.",
+        "position": "CB",
+        "depth": 1,
+        "alignment_row": "Defense:6",
+        "section": "Defense",
+        "table_index": null,
+        "player_reference": null
+      },
+      {
+        "player": "Tremon Smith",
+        "position": "CB",
+        "depth": 2,
+        "alignment_row": "Defense:6",
+        "section": "Defense",
+        "table_index": null,
+        "player_reference": null
+      },
+      {
+        "player": "Kamari Lassiter",
+        "position": "CB",
+        "depth": 1,
+        "alignment_row": "Defense:7",
+        "section": "Defense",
+        "table_index": null,
+        "player_reference": null
+      },
+      {
+        "player": "Jalen Pitre",
+        "position": "NKL",
+        "depth": 1,
+        "alignment_row": "Defense:8",
+        "section": "Defense",
+        "table_index": null,
+        "player_reference": null
+      },
+      {
+        "player": "Calen Bullock",
+        "position": "S",
+        "depth": 1,
+        "alignment_row": "Defense:9",
+        "section": "Defense",
+        "table_index": null,
+        "player_reference": null
+      },
+      {
+        "player": "Kamari Ramsey",
+        "position": "S",
+        "depth": 2,
+        "alignment_row": "Defense:9",
+        "section": "Defense",
+        "table_index": null,
+        "player_reference": null
+      },
+      {
+        "player": "Ja\u2019Marcus Ingram",
+        "position": "S",
+        "depth": 3,
+        "alignment_row": "Defense:9",
+        "section": "Defense",
+        "table_index": null,
+        "player_reference": null
+      },
+      {
+        "player": "Reed Blankenship",
+        "position": "S",
+        "depth": 1,
+        "alignment_row": "Defense:10",
+        "section": "Defense",
+        "table_index": null,
+        "player_reference": null
+      },
+      {
+        "player": "M.J. Stewart",
+        "position": "S",
+        "depth": 2,
+        "alignment_row": "Defense:10",
+        "section": "Defense",
+        "table_index": null,
+        "player_reference": null
+      },
+      {
+        "player": "Kai Kroeger",
+        "position": "P",
+        "depth": 1,
+        "alignment_row": "Special Teams:0",
+        "section": "Special Teams",
+        "table_index": null,
+        "player_reference": null
+      },
+      {
+        "player": "Ka\u2019imi Fairbairn",
+        "position": "K",
+        "depth": 1,
+        "alignment_row": "Special Teams:1",
+        "section": "Special Teams",
+        "table_index": null,
+        "player_reference": null
+      },
+      {
+        "player": "Austin Brinkman",
+        "position": "LS",
+        "depth": 1,
+        "alignment_row": "Special Teams:2",
+        "section": "Special Teams",
+        "table_index": null,
+        "player_reference": null
+      },
+      {
+        "player": "Kai Kroeger",
+        "position": "H",
+        "depth": 1,
+        "alignment_row": "Special Teams:3",
+        "section": "Special Teams",
+        "table_index": null,
+        "player_reference": null
+      },
+      {
+        "player": "Jaylin Noel",
+        "position": "PR",
+        "depth": 1,
+        "alignment_row": "Special Teams:4",
+        "section": "Special Teams",
+        "table_index": null,
+        "player_reference": null
+      },
+      {
+        "player": "Tremon Smith",
+        "position": "PR",
+        "depth": 2,
+        "alignment_row": "Special Teams:4",
+        "section": "Special Teams",
+        "table_index": null,
+        "player_reference": null
+      },
+      {
+        "player": "Jaylin Noel",
+        "position": "KR",
+        "depth": 1,
+        "alignment_row": "Special Teams:5",
+        "section": "Special Teams",
+        "table_index": null,
+        "player_reference": null
+      },
+      {
+        "player": "Tremon Smith",
+        "position": "KR",
+        "depth": 2,
+        "alignment_row": "Special Teams:5",
+        "section": "Special Teams",
+        "table_index": null,
+        "player_reference": null
+      },
+      {
+        "player": "Woody Marks",
+        "position": "KR",
+        "depth": 3,
+        "alignment_row": "Special Teams:5",
+        "section": "Special Teams",
+        "table_index": null,
+        "player_reference": null
+      },
+      {
+        "player": "Xavier Hutchinson",
+        "position": "KR",
+        "depth": 4,
+        "alignment_row": "Special Teams:5",
+        "section": "Special Teams",
+        "table_index": null,
+        "player_reference": null
+      }
+    ]
+  }
+]
