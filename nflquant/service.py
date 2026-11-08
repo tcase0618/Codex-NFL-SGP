@@ -643,6 +643,9 @@ def matchup(game_id: str) -> dict:
     m["through_week"] = week - 1
     m["unavailable"] = ["WR vs specific CB shadow matchups (no public coverage assignment)",
                         "Edge vs individual tackle win rates (no public rusher-blocker attribution)"]
+    if season > 2025:
+        m["unavailable"].insert(0, f"{season} participation data is not yet published upstream: pressure, man/zone, coverage-shell "
+                                   "and box-count unit inputs are the regressed 2025 prior, not in-season observations.")
     return clean(m)
 
 

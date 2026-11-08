@@ -1,5 +1,23 @@
 # Case Capital Football Betting Engine
 
+## NFL Quant Intelligence Platform (`nflquant`)
+
+A deterministic, LLM-free NFL analytics terminal built on public nflverse data
+(play-by-play 2006–2026, NGS participation 2016–2025, FTN charting 2022–2026):
+930-field team library, 132-metric player library, as-of opponent-adjusted
+ratings, walk-forward game and player models with calibration, trained
+unit-matchup models, and a vectorized play-level Monte Carlo simulator anchored to
+the game model. See [docs/nflquant-platform.md](docs/nflquant-platform.md) and the
+generated [validation report](docs/nflquant-validation-report.md).
+
+```bash
+pip install -r requirements-quant.txt
+python -m nflquant.pipeline            # ingest → lake → metrics → models → production
+uvicorn nflquant.api:app --port 8780   # terminal at http://127.0.0.1:8780
+```
+
+The sections below document the original ticket-screening engine, which is unchanged.
+
 Research and ticket screening engine for football player props. It accepts external, timestamped roster, market, game-state, and scenario snapshots. It does not fetch prices, place bets, or infer historical outcomes.
 
 ## November 2 postmortem changes
