@@ -25,7 +25,10 @@ def build(verbose: bool = True) -> dict:
     cfg = settings()
     fit, preds, meta = game_model.train_production(verbose)
     (cfg.model_dir).mkdir(parents=True, exist_ok=True)
-    (cfg.model_dir / "game_production.pkl").write_bytes(pickle.dumps(fit))
+    from types import SimpleNamespace
+    slim = SimpleNamespace(models=fit.models, weights=fit.weights, sigma_margin=fit.sigma_margin,
+                           sigma_total=fit.sigma_total, platt=fit.platt, xgb_params=fit.xgb_params)
+    (cfg.model_dir / "game_production.pkl").write_bytes(pickle.dumps(slim))
     preds.to_parquet(cfg.lake_dir / "upcoming_game_predictions.parquet", index=False)
     if verbose:
         print("production game predictions", len(preds), flush=True)

@@ -71,8 +71,13 @@ def play_frame(seasons) -> tuple[pd.DataFrame, pd.DataFrame]:
     return passes, runs
 
 
-PASS_X = SITUATION + PASS_OFF + PASS_DEF + ["qb_epa", "man"]
-RUN_X = SITUATION + RUN_OFF + RUN_DEF + ["light_box", "loaded_box"]
+# Outcome models never see charting-label indicators: label missingness is correlated with outcomes
+# (e.g. coverage is often unlabeled on sacks), which would leak. Coverage/box splits use separate
+# conditional models trained only on plays where the label is known.
+PASS_X = SITUATION + PASS_OFF + PASS_DEF + ["qb_epa"]
+RUN_X = SITUATION + RUN_OFF + RUN_DEF
+PASS_COV_X = PASS_X + ["man"]
+RUN_BOX_X = RUN_X + ["light_box", "loaded_box"]
 
 
 def _model(kind):
@@ -104,6 +109,15 @@ def train(verbose: bool = True) -> dict:
             models[(name, t)] = _model(kind).fit(f[X], f[t])
             if verbose:
                 print("matchup", name, t, report[name][t], flush=True)
+    for name, frame, X, col in (("pass", passes, PASS_COV_X, "man"), ("run", runs, RUN_BOX_X, "light_box")):
+        f = frame[frame[col].notna()]
+        tr, te = f[~f["season"].isin(TEST_SEASONS)], f[f["season"].isin(TEST_SEASONS)]
+        mc = _model("reg").fit(tr[X], tr["epa"])
+        pred = mc.predict(te[X])
+        report[name]["epa_conditional_" + col] = {"n_train": int(len(tr)), "n_test": int(len(te)),
+                                                  "r2": float(1 - np.mean((te["epa"] - pred) ** 2) / np.var(te["epa"])),
+                                                  "note": f"trained only on plays with a known {col} label"}
+        models[(name, "epa_cond")] = _model("reg").fit(f[X], f["epa"])
     sit = {"pass": passes[SITUATION].sample(3000, random_state=1), "run": runs[SITUATION].sample(3000, random_state=1)}
     import pickle
     path = settings().model_dir / "matchup_models.pkl"
@@ -145,18 +159,15 @@ def game_matchups(game_id: str) -> dict:
             S = sit[unit].copy()
             for c in OFF:
                 S[c] = o[c]
-            def frame(defvals, extra=None):
+            def frame(defvals, extra=None, cols=X):
                 F = S.copy()
                 for c in DEF:
                     F[c] = defvals[c]
                 if unit == "pass":
                     F["qb_epa"] = qb
-                    F["man"] = np.nan
-                else:
-                    F["light_box"], F["loaded_box"] = np.nan, np.nan
                 for k, v in (extra or {}).items():
                     F[k] = v
-                return F[X]
+                return F[cols]
             this, avg = frame(drow), frame(league)
             for t, kind in targets.items():
                 m = models[(unit, t)]
@@ -164,15 +175,15 @@ def game_matchups(game_id: str) -> dict:
                 v, b = float(np.mean(f(this))), float(np.mean(f(avg)))
                 side[unit][t] = {"predicted": v, "vs_league_avg_defense": b, "impact": v - b}
             if unit == "pass":
-                m = models[("pass", "epa")]
+                m = models[("pass", "epa_cond")]
                 for label, val in (("man", 1.0), ("zone", 0.0)):
-                    side["coverage"][label] = float(np.mean(m.predict(frame(drow, {"man": val}))))
+                    side["coverage"][label] = float(np.mean(m.predict(frame(drow, {"man": val}, PASS_COV_X))))
                 side["coverage"]["opponent_man_rate"] = float(drow["def.man_rate.all"])
                 side["coverage"]["weighted"] = side["coverage"]["opponent_man_rate"] * side["coverage"]["man"] + (1 - side["coverage"]["opponent_man_rate"]) * side["coverage"]["zone"]
             else:
-                m = models[("run", "epa")]
+                m = models[("run", "epa_cond")]
                 for label, lb, ld in (("light_box", 1.0, 0.0), ("normal_box", 0.0, 0.0), ("loaded_box", 0.0, 1.0)):
-                    side["box"][label] = float(np.mean(m.predict(frame(drow, {"light_box": lb, "loaded_box": ld}))))
+                    side["box"][label] = float(np.mean(m.predict(frame(drow, {"light_box": lb, "loaded_box": ld}, RUN_BOX_X))))
                 side["box"]["opponent_loaded_rate"] = float(drow["def.loaded_box_rate.all"])
         side["inputs"] = {"offense": {c: _num(o[c]) for c in PASS_OFF + RUN_OFF},
                           "defense": {c: _num(drow[c]) for c in PASS_DEF + RUN_DEF},

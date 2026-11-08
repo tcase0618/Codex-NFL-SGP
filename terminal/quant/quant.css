@@ -101,3 +101,7 @@ svg .grid{stroke:#162031}
 .li{display:flex;justify-content:space-between;padding:5px 9px;border-bottom:1px solid var(--line);cursor:pointer}
 .li:hover{background:#111a28}.li.sel{background:#14223a}
 .li .r{font:10px var(--mono);color:var(--mut)}
+/* mobile: keep wide tables inside their panels instead of widening the page */
+.pb{overflow-x:auto}
+.grid>*{min-width:0}
+@media (max-width:720px){.score{gap:12px}.score .pts{font-size:24px}.ws button{padding:10px 7px}}
