@@ -193,7 +193,7 @@ def run(config_path, database, output, evidence_path=None, as_of=None, *, game_i
     if game_id is None and teams is None and len(profiles)!=32:raise ValueError('complete all-32 profile snapshot required')
     evidence=json.loads(Path(evidence_path).read_text()) if evidence_path else {}
     if not isinstance(evidence,dict):raise ValueError('evidence manifest must be an object')
-    source_roots=[runtime/'sources',runtime.parent/'coaching-sources',runtime.parent/'team-profile-sources',runtime.parent/'espn-cache',runtime.parent/'team-context',runtime.parent/'team-scheme-sources']
+    source_roots=[runtime/'sources',runtime.parent/'coaching-sources',runtime.parent/'team-profile-sources',runtime.parent/'espn-cache',runtime.parent/'team-context',runtime.parent/'team-scheme-sources',runtime.parent/'bears-seahawks-refresh-sources']
     gaps=state.get('context_gaps',[])
     scoped=game_id is not None or teams is not None
     scope=dict(evidence.get('scope',{}));schedule_artifacts=[];contexts={}

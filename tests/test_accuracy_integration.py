@@ -254,6 +254,25 @@ def test_scoped_sources_reject_paths_outside_source_roots(scoped_audit_files):
     assert report['status']=='BLOCKED' and 'source archive outside source roots' in report['reasons']
 
 
+def test_legacy_seed_archive_is_verified_inside_approved_root(scoped_audit_files):
+    from football_engine.team_profiles import content_hash
+    f=scoped_audit_files
+    root=f['tmp_path']/'bears-seahawks-refresh-sources'
+    root.mkdir()
+    archive=root/'source.json'
+    archive.write_text('{"fixture":"seed"}')
+    payload=json.loads(f['profile'].read_text())
+    p=payload['profiles']['JAX']
+    p.pop('version')
+    p['source']=dict(reference='fixture:seed',archive_file=str(archive),
+                     sha256=hashlib.sha256(archive.read_bytes()).hexdigest())
+    p['version']=content_hash(p)
+    f['profile'].write_text(json.dumps(payload))
+    report=run_scoped_fixture(f,game_id='fixture-game',teams=['JAX','BAL'])
+    result=report['auditors']['source']
+    assert result['status']=='PASS' and result['evidence']['source_hashes_verified']==1
+
+
 def test_real_layout_output_snapshot_and_repaired_source_are_accepted_read_only(scoped_audit_files):
     from football_engine.team_profiles import content_hash
     f=scoped_audit_files;output=f['tmp_path']/'outputs'

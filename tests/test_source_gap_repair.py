@@ -7,6 +7,19 @@ import pytest
 from research.source_gap_repair import injury_metadata, own_injury_rows, repair_injury, league_transaction_window, attach_reviewed_identities
 
 
+def test_arizona_official_logo_az_maps_to_cardinals_team_only():
+    def table(code, name):
+        return (f'<div class="nfl-o-injury-report__container">'
+                f'<div class="nfl-o-injury-report__club-logo">'
+                f'<img data-src="https://static.www.nfl.com/clubs/logos/{code}"></div>'
+                f'<table><tr><th>Player</th><th>Injury</th></tr>'
+                f'<tr><td><a href="/team/players-roster/{name.lower()}/">{name}</a></td><td>Knee</td></tr>'
+                f'</table></div>')
+    raw=(table('AZ','Cardinal')+table('SEA','Seahawk')).encode()
+    rows=own_injury_rows(raw,'https://www.azcardinals.com/team/injury-report/')
+    assert len(rows)==1 and rows[0]['columns']['Player']=='Cardinal'
+
+
 def table(link):
     return f'<table><thead><tr><th>Player</th><th>Injury</th></tr></thead><tbody><tr><td>{link}</td><td>Knee</td></tr></tbody></table>'
 

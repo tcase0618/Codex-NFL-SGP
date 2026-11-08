@@ -114,8 +114,9 @@ def _injury_rows(raw, url):
             for node in container.select('.nfl-o-injury-report__club-logo'):
                 for image in [node, *node.select('[data-src], [data-srcset], [src], [srcset]')]:
                     for attribute in ('data-src', 'data-srcset', 'src', 'srcset'):
-                        reported.update(re.findall(r'/clubs/logos/([A-Z]+)(?=[/.,?\s]|$)',
-                                                   image.get(attribute, '')))
+                        codes = re.findall(r'/clubs/logos/([A-Z]+)(?=[/.,?\s]|$)',
+                                           image.get(attribute, ''))
+                        reported.update('ARI' if code == 'AZ' else code for code in codes)
         owned = expected is not None and reported == {expected}
         if expected and reported and not owned:
             if expected in reported:
