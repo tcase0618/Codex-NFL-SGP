@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#070a10">
+<title>Case NFL Quant Terminal</title>
+<link rel="stylesheet" href="/static/quant.css">
+</head>
+<body>
+<header class="top">
+  <div class="brand"><span class="mark">CASE</span><span class="sep"></span><span class="prod">NFL QUANT INTELLIGENCE</span></div>
+  <nav class="ws" id="wsnav" aria-label="Workspaces">
+    <button data-ws="predict" class="on">Prediction Engine</button>
+    <button data-ws="matchup">Matchup Lab</button>
+    <button data-ws="team">Team Intelligence</button>
+    <button data-ws="player">Player Intelligence</button>
+    <button data-ws="audit">Model Audit</button>
+    <button data-ws="data">Data &amp; Sources</button>
+  </nav>
+  <div class="topr"><span class="pill" id="cutoff">—</span><span class="pill dim">NO LLM RUNTIME</span></div>
+</header>
+<main id="main" aria-live="polite"><div class="loading">Loading terminal…</div></main>
+<footer class="foot">
+  <span>Tiers: <b class="t-obs">OBSERVED</b> <b class="t-der">DERIVED</b> <b class="t-mod">MODELED</b> <b class="t-pre">PREDICTED</b> <b class="t-syn">SYNTHETIC</b></span>
+  <span id="footnote">Sources: nflverse (CC-BY 4.0), FTN charting (CC-BY-SA 4.0), NGS participation via nflverse. Research use; not betting advice.</span>
+</footer>
+<script src="/static/charts.js"></script>
+<script src="/static/app.js"></script>
+</body>
+</html>

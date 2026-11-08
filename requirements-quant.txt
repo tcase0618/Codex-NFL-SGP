@@ -1,0 +1,13 @@
+# Case NFL Quant Intelligence Platform — runtime + training (no LLM dependencies)
+numpy==2.5.3
+pandas==3.0.5
+pyarrow==26.0.1
+scipy==1.18.1
+scikit-learn==1.9.1
+xgboost==3.4.1
+requests==2.34.2
+fastapi==0.162.2
+uvicorn==0.54.0
+httpx==0.28.1
+pytest==9.2.0
+# Optional benchmark (heavy; not required): autogluon.tabular — see docs/nflquant-platform.md

@@ -1,0 +1,5 @@
+# Scheduled refresh (UTC). Ingest uses conditional GETs, so unchanged assets are not re-downloaded.
+# Daily 09:17 UTC during the season: refresh data, ratings, features, walk-forward game model, production predictions.
+17 9 * 9-12,1-2 *  cd /srv/nflquant && NFLQ_DATA_DIR=/srv/nflquant/data python -m nflquant.pipeline --refresh >> /var/log/nflquant-refresh.log 2>&1
+# Weekly Tuesday 10:41 UTC: full rebuild including player walk-forward, matchup models and simulation backtest.
+41 10 * 9-12,1-2 2 cd /srv/nflquant && NFLQ_DATA_DIR=/srv/nflquant/data python -m nflquant.pipeline >> /var/log/nflquant-full.log 2>&1
