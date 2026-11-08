@@ -35,6 +35,9 @@ offer capture **before** it selects ticket legs. See the
 structural consistency; a human-reviewed source, the exact combined sportsbook
 quote and independently validated joint probabilities are still needed before
 any claim of favorable odds. Historical replay thresholds are never live offers.
+For quoted, audited candidates, `rank_priced_parlays` shows the best available
+probability/payout tradeoffs while retaining `RESEARCH_ONLY` status; its 50%
+joint-probability screen is a configurable preference, not a win guarantee.
 
 Construct `Source`, `Player`, `Leg`, `Scenario`, and `Snapshot` objects from a trusted feed, then call `evaluate_ticket(snapshot, legs)`. Inputs require timezone-aware timestamps. For live evaluations, supply `GameState(seconds_remaining, "in_progress", source, {"CHI": 20, "SEA": 9})` and every relevant `maximum_remaining` cap. Source age may be set to at most 300 seconds; the scenario stress floor may be set no lower than 5%, and `aggressive_fraction` no lower than 0.8. The default 0.8 allows a yardage requirement no greater than 125% of scenario expected remaining yardage, subject to the scenario probability stress gate. These are structural screening settings, not optimized betting thresholds. Odds must be observed decimal prices greater than 1; the engine never fabricates them.
 
