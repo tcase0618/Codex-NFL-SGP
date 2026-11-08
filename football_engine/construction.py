@@ -19,12 +19,28 @@ class AuditedConstructions:
 
 
 def construct_audited_tickets(snapshot, offered_legs, length, *, accuracy_report,
-                             model_version, max_candidates=20000, audit_checks=None):
+                             model_version, max_candidates=20000, audit_checks=None,
+                             market_capture_path=None, market_capture_sha256=None):
     """Production-facing research entry point; evidence gates precede selection."""
     from .accuracy import check_clearance, evidence_fingerprint
+
+    from .market_first import verify_offered_pool
+    preflight = verify_offered_pool(snapshot, offered_legs, market_capture_path,
+                                    expected_sha256=market_capture_sha256)
+    if preflight.status != 'PASS':
+        return AuditedConstructions('BLOCKED', preflight.reasons, ())
     clearance = check_clearance(accuracy_report, snapshot, model_version=model_version, checks=audit_checks)
     if not clearance.cleared:
         return AuditedConstructions('BLOCKED', clearance.reasons, ())
+    from pathlib import Path
+    artifacts = accuracy_report.get('verified_artifacts', ())
+    market_evidence = accuracy_report['auditors']['market']['evidence']
+    if (market_evidence.get('market_capture_sha256') != preflight.archive_sha256
+            or not any(Path(item['path']).resolve() == Path(market_capture_path).resolve()
+                       and item['sha256'] == preflight.archive_sha256
+                       for item in artifacts)):
+        return AuditedConstructions('BLOCKED',
+                                    ('market capture is not bound to audited evidence',), ())
     try:
         if not isinstance(offered_legs,(tuple,list)) or any(not isinstance(leg,Leg) for leg in offered_legs):
             raise ValueError('typed offered legs required')
@@ -83,7 +99,8 @@ def construct_anytime_td_tickets(snapshot: Snapshot, offered_legs: tuple[Leg, ..
 
 def construct_audited_anytime_td_tickets(snapshot, offered_legs, *, accuracy_report,
                                          model_version, max_candidates=20000,
-                                         audit_checks=None):
+                                         audit_checks=None, market_capture_path=None,
+                                         market_capture_sha256=None):
     """Apply the same evidence clearance as the mixed-market family."""
     if not isinstance(offered_legs, (tuple, list)) or any(
             not isinstance(leg, Leg) or leg.market != "anytime_td" or leg.line != 1
@@ -94,4 +111,6 @@ def construct_audited_anytime_td_tickets(snapshot, offered_legs, *, accuracy_rep
                                      accuracy_report=accuracy_report,
                                      model_version=model_version,
                                      max_candidates=max_candidates,
-                                     audit_checks=audit_checks)
+                                     audit_checks=audit_checks,
+                                     market_capture_path=market_capture_path,
+                                     market_capture_sha256=market_capture_sha256)

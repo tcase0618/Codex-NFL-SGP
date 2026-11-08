@@ -29,6 +29,13 @@ alone cannot authorize them. Existing structural decisions expose
 `use_status=RESEARCH_ONLY`. Predictive accuracy remains unverified until valid
 prospective evidence is collected and evaluated.
 
+The audited constructor now requires a frozen, hash-matched FanDuel Tennessee
+offer capture **before** it selects ticket legs. See the
+[market first workflow](docs/market-first-workflow.md). A capture proves only
+structural consistency; a human-reviewed source, the exact combined sportsbook
+quote and independently validated joint probabilities are still needed before
+any claim of favorable odds. Historical replay thresholds are never live offers.
+
 Construct `Source`, `Player`, `Leg`, `Scenario`, and `Snapshot` objects from a trusted feed, then call `evaluate_ticket(snapshot, legs)`. Inputs require timezone-aware timestamps. For live evaluations, supply `GameState(seconds_remaining, "in_progress", source, {"CHI": 20, "SEA": 9})` and every relevant `maximum_remaining` cap. Source age may be set to at most 300 seconds; the scenario stress floor may be set no lower than 5%, and `aggressive_fraction` no lower than 0.8. The default 0.8 allows a yardage requirement no greater than 125% of scenario expected remaining yardage, subject to the scenario probability stress gate. These are structural screening settings, not optimized betting thresholds. Odds must be observed decimal prices greater than 1; the engine never fabricates them.
 
 Call `Ledger.evaluate_and_record(ticket_id, snapshot, legs, quote=quote)` to evaluate and atomically append the exact inputs, combined quote when available, and decision. Use a new ticket ID for each revised proposal. A quote's `leg_keys` must match all legs exactly, with keys in the form `player_id:market:line`. Later append `settlement` with overall `status` and per-leg results. Resolved legs need observed total, predicted probability, threshold, odds, source evidence, and error category (`opportunity`, `efficiency`, `game_state`, or `construction` as applicable). Keep unresolved results explicitly unresolved. Call `Ledger.verify()` to check the hash chain. Do not edit ledger rows.
