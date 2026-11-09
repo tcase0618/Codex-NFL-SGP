@@ -151,6 +151,41 @@ def candidates(pg: pd.DataFrame) -> pd.DataFrame:
     return c.merge(tg[["game_id", "team", "season", "week", "kickoff"]], on=["game_id", "team"])
 
 
+DEPTH_LIMITS = {"RB": 3, "WR": 5, "TE": 3, "QB": 2}
+
+
+def depth_pool(meta: pd.DataFrame) -> pd.DataFrame:
+    """Skill players on the depth chart before kickoff (fix: Nov 8 audit — a rostered RB3 with
+    carries was absent from the pool, inflating the starter's share). Weekly charts through 2024;
+    timestamped snapshots (latest before kickoff) from 2025."""
+    dc = lake.load("depth_charts")
+    rows = []
+    wk = dc[dc["week"].notna() & dc["position"].isin(list(DEPTH_LIMITS))].copy()
+    if len(wk):
+        wk["rank"] = pd.to_numeric(wk["depth_team"], errors="coerce")
+        wk = wk[wk["rank"] <= wk["position"].map(DEPTH_LIMITS)]
+        m = meta.merge(wk[["season", "week", "club_code", "gsis_id"]].rename(columns={"club_code": "team", "gsis_id": "player_id"}),
+                       on=["season", "week", "team"])
+        rows.append(m)
+    sn = dc[dc["dt"].notna() & dc["pos_abb"].isin(list(DEPTH_LIMITS))].copy() if "dt" in dc else dc.iloc[:0]
+    if len(sn):
+        sn = sn[pd.to_numeric(sn["pos_rank"], errors="coerce") <= sn["pos_abb"].map(DEPTH_LIMITS)]
+        sn["ts"] = pd.to_datetime(sn["dt"]).dt.tz_localize(None)
+        snaps = {t: g for t, g in sn.groupby("team")}
+        for r in meta[meta["season"] >= 2025].itertuples():
+            g = snaps.get(r.team)
+            if g is None:
+                continue
+            before = g[g["ts"] < pd.Timestamp(r.kickoff)]
+            if before.empty:
+                continue
+            last = before[before["ts"] == before["ts"].max()]
+            for pid in last["gsis_id"].dropna().unique():
+                rows.append(pd.DataFrame([{"game_id": r.game_id, "team": r.team, "season": r.season, "week": r.week,
+                                           "kickoff": r.kickoff, "player_id": pid}]))
+    return pd.concat(rows, ignore_index=True).dropna(subset=["player_id"]) if rows else meta.iloc[:0].assign(player_id=None)
+
+
 def build_dataset(verbose: bool = True) -> pd.DataFrame:
     pg = base_table()
     hist = player_history(pg).sort_values("last_kickoff")
@@ -162,12 +197,13 @@ def build_dataset(verbose: bool = True) -> pd.DataFrame:
                     gfq[["game_id", "away_team", "away_qb_id"]].set_axis(["game_id", "team", "player_id"], axis=1)]).dropna()
     meta = cand.drop_duplicates(["game_id", "team"])[["game_id", "team", "season", "week", "kickoff"]]
     pq = pq.merge(meta, on=["game_id", "team"])
-    cand = pd.concat([cand, pq]).drop_duplicates(["game_id", "team", "player_id"]).sort_values("kickoff")
+    dp = depth_pool(meta)
+    cand = pd.concat([cand, pq, dp]).drop_duplicates(["game_id", "team", "player_id"]).sort_values("kickoff")
     if verbose:
         print("player candidates", len(cand), flush=True)
     d = pd.merge_asof(cand, hist, left_on="kickoff", right_on="last_kickoff", by="player_id",
                       allow_exact_matches=False, direction="backward")
-    proj_keys = set(zip(pq["game_id"], pq["player_id"]))
+    proj_keys = set(zip(pq["game_id"], pq["player_id"])) | set(zip(dp["game_id"], dp["player_id"]))
     is_proj = pd.Series([k in proj_keys for k in zip(d["game_id"], d["player_id"])], index=d.index)
     d = d[(d["last_team"] == d["team"]) | is_proj]  # most recent game was for this team, or projected starter
     d["days_since_last"] = (d["kickoff"] - d["last_kickoff"]).dt.days

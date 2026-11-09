@@ -52,3 +52,17 @@ was too low (it blended in the chance of not playing). Live legs matched expecta
 - Always include every active RB/WR on the depth chart in the projection pool (not only recent stat-producers).
 - Live mode: update player shares with first-half usage before simulating the second half.
 - Record offered and closing prices for every pick in the ledger; without them results cannot be judged.
+
+## Fixes implemented (Nov 9)
+1. **QB replacement must be on the current roster** (`nflquant/features.py`). Found while preparing BUF@MIN: the rule
+   projected J.J. McCarthy (now with NYG) as Minnesota's starter; it now projects Carson Wentz. The earlier McCarthy
+   recommendations for BUF@MIN are withdrawn.
+2. **Depth-chart player pool** (`nflquant/models/player.py: depth_pool`): RB1-3, WR1-5, TE1-3, QB1-2 from the latest
+   pregame snapshot are always projected.
+3. **Hybrid parlay pricing** (`research/strategy_v3.py`, `research/tonight_v4.py`): calibrated ML leg probabilities ×
+   simulator correlation lift; game-line legs centred on the market line.
+4. **Live first-half usage update** (`research/live_halftime.py: update_shares`): share = (prior·K + 1H count)/(K + team 1H total);
+   unprojected first-half participants are added.
+5. **Bet log** (`research/bet_log.py`): offered/closing price, stake, result → P/L, ROI, CLV.
+6. Finding: the model's side covered 55-62% vs closing spreads in 2012-2024 when disagreeing by 3+ points, but 48.6% (2025)
+   and 51.2% (2026). Treated as no edge; game-line legs now use market lines.

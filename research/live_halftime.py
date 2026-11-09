@@ -60,6 +60,47 @@ def live_state(event: str) -> dict:
             "receiver2h": receiver2h, "first_half": first_half, "inactive_espn": inactive, "raw": d}
 
 
+K_TARGETS, K_CARRIES = 20.0, 15.0
+
+
+def update_shares(spec, fh_gsis: dict, abbr: dict) -> list[str]:
+    """Fix (Nov 9 audit): blend pregame usage shares with observed first-half usage and add players
+    who played in the first half but were absent from the projection pool.
+    share_2H = (prior_share·K + first-half count) / (K + team first-half total)."""
+    notes = []
+    for side in (spec.home, spec.away):
+        fh = {pid: v for pid, v in fh_gsis.items() if v.get("team") == side.team}
+        # receivers
+        tot_t = sum(v.get("targets", 0) for v in fh.values())
+        prior = {r[0]: r for r in side.receivers}
+        z = sum(r[1] for r in side.receivers) or 1.0
+        new = []
+        for pid in set(prior) | {p for p, v in fh.items() if v.get("targets", 0) > 0}:
+            share = prior[pid][1] / z if pid in prior else 0.0
+            obs = fh.get(pid, {}).get("targets", 0)
+            post = (share * K_TARGETS + obs) / (K_TARGETS + tot_t)
+            base = prior.get(pid, (pid, 0, 0.0, 1.0))
+            new.append((pid, post, base[2], base[3]))
+            if pid not in prior:
+                notes.append(f"added receiver {fh[pid]['name']} ({obs} 1H targets)")
+        side.receivers = new
+        # rushers (QB carries in the box include scrambles, so the QB keeps its pregame designed share)
+        tot_c = sum(v.get("rush_att", 0) for p, v in fh.items() if p != side.qb)
+        prior = {r[0]: r for r in side.rushers}
+        z = sum(r[1] for r in side.rushers) or 1.0
+        new = []
+        for pid in set(prior) | {p for p, v in fh.items() if v.get("rush_att", 0) > 0 and p != side.qb}:
+            share = prior[pid][1] / z if pid in prior else 0.0
+            obs = 0 if pid == side.qb else fh.get(pid, {}).get("rush_att", 0)
+            post = share if pid == side.qb else (share * K_CARRIES + obs) / (K_CARRIES + tot_c)
+            base = prior.get(pid, (pid, 0, 1.0))
+            new.append((pid, post, base[2]))
+            if pid not in prior:
+                notes.append(f"added rusher {fh[pid]['name']} ({obs} 1H carries)")
+        side.rushers = new
+    return notes
+
+
 def main():
     event, gid = (sys.argv[1], sys.argv[2]) if len(sys.argv) > 2 else ("401873050", "2026_09_TB_CHI")
     L = live_state(event)
@@ -77,6 +118,9 @@ def main():
     spec = build_spec(gid, proj, qb)
     anchor(spec, (pred["model"]["home_points"], pred["model"]["away_points"]), n=4000, iters=5)
     H, A = pred["home"], pred["away"]
+    fh_pre = {espn2gsis.get(k): v for k, v in L["first_half"].items() if espn2gsis.get(k)}
+    for note in update_shares(spec, fh_pre, L["abbr"]):
+        print("  share update:", note)
     start = {"quarter": 3, "clock": 900.0, "score": (L["score"]["home"], L["score"]["away"]),
              "receiver": 0 if L["receiver2h"] == "home" else 1}
     sim = Sim(spec, N, SEED).run(start=start)

@@ -6,8 +6,9 @@
    passing yards / passing TDs / receiving yards, plus role-shock spots (teammate usage vacated:
    QB attempts/yards when vac_att >= 0.5, RB carries/rush yards when vac_car >= 0.25).
    Receptions / targets / carries / rushing yards in normal games are excluded (≈0% skill).
-3. Parlay price = product of calibrated legs × empirical same-game lift (1.03); the simulator
-   joint is not used for pricing (its marginals were less accurate than the ML models).
+3. Parlay price (hybrid, Nov 9 fix) = product of calibrated ML legs × the simulator's correlation
+   lift for that exact combination (sim joint / sim product, clipped 0.7-1.6). Marginals come from
+   the better-calibrated ML models; dependence comes from the joint game simulation.
 4. Bet only when the offered price beats fair by the required edge: 5% (single), 10% (parlay).
    Stake = quarter Kelly, capped at 1% of bankroll per ticket.
 Usage: python -m research.strategy_v3 2026_09_BUF_MIN [--price "leg-id=+120" ...]
@@ -83,6 +84,42 @@ def kelly(p, american_price, frac=0.25, cap=0.01):
     b = dec - 1
     f = (b * p - (1 - p)) / b
     return max(0.0, min(cap, frac * f)), p * dec - 1
+
+
+SIM_STAT = {"passing_yards": "pass_yds", "receiving_yards": "rec_yds", "rushing_yards": "rush_yds", "passing_tds": "pass_td",
+            "attempts": "pass_att", "carries": "rush_att", "receptions": "rec", "targets": "targets"}
+
+
+def joint_sim(gid: str, n: int = 30000, seed: int = 2026):
+    """Pregame joint simulation; returns (sim, name->player_id map)."""
+    from nflquant.sim.build import anchor, build_spec
+    from nflquant.sim.engine import Sim
+    pred = service.game_prediction(gid)
+    rows = [{"game_id": gid, "player_id": p["player_id"], "team": p["team"], "group": p["group"], "target": t, "mean": st["mean"] or 0}
+            for p in pred["player_projections"] for t, st in p["stats"].items()]
+    qb = {pred["home"]: pred["projected_qbs"]["home"]["id"], pred["away"]: pred["projected_qbs"]["away"]["id"]}
+    spec = build_spec(gid, pd.DataFrame(rows), qb)
+    anchor(spec, (pred["model"]["home_points"], pred["model"]["away_points"]), n=4000, iters=5)
+    return Sim(spec, n, seed).run(), pred
+
+
+def leg_vector(sim, leg, name2pid):
+    pid = name2pid.get(leg["player"])
+    st = SIM_STAT.get(leg["stat"])
+    if pid is None or st is None or pid not in sim.pidx:
+        return None
+    return sim.ps[st][:, sim.pidx[pid]] > leg["line"]
+
+
+def hybrid_price(legs, sim, name2pid):
+    vecs = [leg_vector(sim, l, name2pid) for l in legs]
+    prod = float(np.prod([l["p"] for l in legs]))
+    if any(v is None for v in vecs):
+        return prod * LIFT, None
+    joint = np.logical_and.reduce(vecs).mean()
+    sp = np.prod([v.mean() for v in vecs])
+    lift = float(np.clip(joint / sp, 0.7, 1.6)) if sp > 0 else 1.0
+    return min(prod * lift, 0.97), lift
 
 
 def main():

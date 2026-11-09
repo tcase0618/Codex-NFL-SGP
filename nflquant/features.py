@@ -66,6 +66,16 @@ def projected_qbs(games: pd.DataFrame) -> pd.DataFrame:
     depth = lake.load("depth_charts")
     dq = depth[(depth["position"] == "QB") & (depth["depth_team"].astype("string") == "1")][["season", "week", "club_code", "gsis_id"]].dropna()
     depth_qb1 = {(int(s), int(w), t): g for s, w, t, g in zip(dq["season"], dq["week"], dq["club_code"], dq["gsis_id"])}
+    # 2025+ depth charts are timestamped snapshots without week: latest QB order per team-season
+    snap = depth[depth["dt"].notna() & (depth["pos_abb"] == "QB")] if "dt" in depth else depth.iloc[:0]
+    depth_qbs = {}
+    if len(snap):
+        snap = snap.assign(season=pd.to_datetime(snap["dt"]).dt.year.where(pd.to_datetime(snap["dt"]).dt.month >= 3,
+                                                                          pd.to_datetime(snap["dt"]).dt.year - 1))
+        snap = snap.assign(ts=pd.to_datetime(snap["dt"]).dt.tz_localize(None))
+        for (ss, t), gg in snap.groupby(["season", "team"]):
+            depth_qbs[(int(ss), t)] = [(ts, list(dict.fromkeys(x.sort_values("pos_rank")["gsis_id"].dropna())))
+                                       for ts, x in gg.groupby("ts")]
     rows = []
     for _, g in games.sort_values("kickoff").iterrows():
         for team in (g["home_team"], g["away_team"]):
@@ -83,8 +93,21 @@ def projected_qbs(games: pd.DataFrame) -> pd.DataFrame:
             if cand is not None and (s, w, team, cand) in out_set:
                 recent = q[(q["posteam"] == team) & (q["game_date"] < g["kickoff"]) & (q["season"] >= s - 1)]
                 alts = recent[recent["passer_id"] != cand].groupby("passer_id")["dropbacks"].sum().sort_values(ascending=False)
-                alts = [a for a in alts.index if (s, w, team, a) not in out_set]
+                # replacement must be on this team's roster for this week (fix: Nov 9 2026 audit —
+                # a former backup who had left the team was being projected)
+                on_roster = lambda a: (not rost_set) or (s, w, team, a) in rost_set
+                alts = [a for a in alts.index if (s, w, team, a) not in out_set and on_roster(a)]
+                if not alts:
+                    snaps = [o for ts, o in depth_qbs.get((s, team), []) if ts < g["kickoff"]]
+                    dc = snaps[-1] if snaps else []
+                    alts = [a for a in dc if (s, w, team, a) not in out_set and a != cand and on_roster(a)]
                 cand, source = (alts[0], "injury_replacement") if alts else (None, "unknown")
+            elif cand is not None and rost_set and (s, w, team, cand) not in rost_set and len(prev) and prev["season"].iat[-1] == s:
+                # previous-game passer no longer on the roster (trade/release): next rostered QB
+                recent = q[(q["posteam"] == team) & (q["game_date"] < g["kickoff"]) & (q["season"] == s)]
+                alts = [a for a in recent.groupby("passer_id")["dropbacks"].sum().sort_values(ascending=False).index
+                        if (s, w, team, a) in rost_set and (s, w, team, a) not in out_set]
+                cand, source = (alts[0], "roster_replacement") if alts else (cand, source)
             rows.append({"game_id": g["game_id"], "team": team, "qb_id": cand, "qb_source": source})
     return pd.DataFrame(rows)
 
