@@ -4,6 +4,8 @@ Research and ticket screening engine for football player props. It accepts exter
 
 The [November 8 Sunday remediation](docs/nov-08-2026-root-cause-remediation.md) documents the cutoff, fresh-snapshot, quarterback-change, pricing, and weekly-display controls added after the retrospective ticket audit. Historical research threshold clears and late revisions are not prospective betting results.
 
+The [coverage aware accuracy audit](docs/coverage-aware-accuracy-2026-11-09.md) tests how unresolved player outcomes affect the reconstructed Week 1–8 Brier comparison. Run `python -m research.coverage_aware_accuracy --source <calibrated.csv> --baseline <raw.csv> --output <new-directory>`; the output directory must not exist. This does not validate same-game parlay probabilities or prices.
+
 ## November 2 postmortem changes
 
 - Touchdown probability uses remaining red-zone touches and end-zone targets with a separate conversion rate. Rushing or receiving yards do not stand in for scoring chances.

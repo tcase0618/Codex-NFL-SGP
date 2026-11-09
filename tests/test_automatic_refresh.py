@@ -1,6 +1,6 @@
 import copy
 import json
-from datetime import timedelta
+from datetime import datetime, timedelta
 
 import pytest
 
@@ -83,6 +83,13 @@ def test_refreshes_cannot_overlap_and_lock_releases_after_failure(tmp_path):
 def test_pipeline_keeps_pending_reviews_and_source_gaps_on_quiet_poll(tmp_path,monkeypatch):
     import research.automatic_refresh as auto
     from test_coaching import context
+    clock_offset = [timedelta()]
+    class FixtureDatetime(datetime):
+        @classmethod
+        def now(cls, tz=None):
+            instant = NOW + clock_offset[0]
+            return instant.astimezone(tz) if tz is not None else instant.replace(tzinfo=None)
+    monkeypatch.setattr(auto, "datetime", FixtureDatetime)
     root=tmp_path/"runtime";out=tmp_path/"out";root.mkdir();out.mkdir()
     db=tmp_path/"team.sqlite"
     seed=tmp_path/"seed.json";seed.write_text(json.dumps(dict(profiles={})))
@@ -122,6 +129,7 @@ def test_pipeline_keeps_pending_reviews_and_source_gaps_on_quiet_poll(tmp_path,m
     first=run(config,True)
     assert first["teams"]==2 and first["new_final_games"]==["1"]
     assert len(first["source_gaps"])==2
+    clock_offset[0] = timedelta(seconds=1)
     second=run(config)
     assert not second["profiles_rebuilt"] and not second["statistical_corrections"]
     assert second["source_gaps"]==first["source_gaps"]
