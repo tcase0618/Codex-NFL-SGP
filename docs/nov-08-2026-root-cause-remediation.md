@@ -1,0 +1,22 @@
+# November 8, 2026 Sunday ticket root cause and controls
+
+The full Sunday audit in the Codex workspace (`output/audits/2026-11-08/full-sunday/audit.md`) is a retrospective grading of research constructions. None of its tickets has a verified placed-bet receipt, accepted combined FanDuel Tennessee SGP quote, stake, or sportsbook settlement. Do not report its `HIT`/`MISS` columns as account wins or losses.
+
+## Failure modes
+
+| Observed failure | Root cause | Enforced control |
+| --- | --- | --- |
+| Early 1 p.m. draft thresholds cleared despite no actual offered lines | Research thresholds were rendered as ticket-like cards | Market-first construction requires an exact frozen FanDuel Tennessee offer capture and hash. Weekly cards now exclude blocked or unpriced records. |
+| Early revisions at 12:51 p.m. ET and revised SNF 3/5/8 at 7:53 p.m. ET | Ticket issue time was after the model's 30-minute decision cutoff | The market capture, ticket snapshot, actual ledger append, and weekly display must all precede kickoff minus 30 minutes. A later revision receives a new ID and cannot enter the pregame series. |
+| Seattle receiver over 95.5 survived a known Sam Darnold absence | QB-regime downside was flagged in prose, not bound into scenario validation | A material QB change requires a source-backed downside scenario and shared joint simulation; absent this evidence the aggressive receiving line is blocked. This is a veto, not a guessed yardage multiplier. |
+| Ladd McConkey had no box stat despite absence from the published inactive list | “Not listed inactive” was treated as stronger participation evidence than it is | Verify game-specific team membership and availability; distinguish official inactive status, expected role, and actual participation. Unknown remains unknown. Final-box participation cannot be fed back into pregame selection. |
+| Swift anytime TD failed despite Chicago scoring 27 | Team points and yardage were used as proxies for player scoring opportunity | TD chance needs independently sourced red-zone/goal-line/end-zone opportunity and conversion, including a no-red-zone downside script. Defensive scores do not imply offensive goal-line chances. |
+| All four late-window base 3-leg constructions failed | Weak or correlated additions were used to fill requested tiers | Display a research tier only when its entire ticket has a structurally valid joint forecast, scenario stress pass, exact offered legs and a frozen combined quote. A 5/8-leg tier must not be padded from a 3-leg core. |
+
+## Evidence boundary
+
+The engine's `approved` result is structural research eligibility. It is not a prediction guarantee or betting permission. A quote timestamp and hash establish internal consistency, not that a sportsbook accepted the bet. `RESEARCH_ONLY` remains the maximum label without prospective calibration and separately verified offered and accepted SGP prices. An in-game injury such as Josh Jacobs' hand injury is a forecast risk, not a pregame fact that could have been known exactly.
+
+The audited constructor now requires fresh sourced current and baseline QB IDs for each team represented in the offered pool. A changed ID must be flagged in `Snapshot.qb_change_teams` with a fresh `qb_change_source`. A corresponding scenario must name the affected team, include a role source, carry at least the minimum stress weight, and lower every QB-dependent leg's modeled output within one shared script. The archive decoder preserves those fields. This does not detect a news announcement automatically or authenticate a caller's source. The market-first and ledger cutoff checks similarly validate recorded times, not an external sportsbook receipt. One-off PDF scripts outside this repository can still bypass these gates; future published PDFs must be generated only from reviewed frozen ledger records and keep research outcomes separate from sportsbook settlements.
+
+Before the next game, freeze actual offers, game-specific personnel, starter and weather context, scenario weights and common samples, model version, and the exact proposed ticket in the immutable ledger by the cutoff. Recheck official availability and book price near kickoff as a separate live review. Grade only the frozen ticket against final authoritative results; preserve voids and unresolved legs. Report abstentions, missing quotes, and blocked tiers alongside any resolved research results.

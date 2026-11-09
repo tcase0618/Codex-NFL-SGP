@@ -10,11 +10,33 @@ from test_engine import SOURCE, leg, snapshot
 from football_engine.engine import GameState, TicketQuote
 
 
+def fresh_snapshot():
+    now = datetime.now(timezone.utc)
+    source = replace(SOURCE, observed_at=now)
+    base = snapshot()
+    return replace(base, as_of=now, kickoff=now + timedelta(hours=1), source=source,
+                   players={pid: replace(player, source=source) for pid, player in base.players.items()},
+                   scenarios=tuple(replace(item, source=source) for item in base.scenarios))
+
+
 def pregame_payload():
     from football_engine.ledger import _json_ready
     from football_engine.engine import evaluate_ticket
-    game = replace(snapshot(), kickoff=datetime.now(timezone.utc) + timedelta(hours=1))
-    return _json_ready(dict(game_id=game.game_id, snapshot=game, decision=evaluate_ticket(game, (leg(),)), legs=(leg(),)))
+    game = fresh_snapshot()
+    offered = replace(leg(), source=game.source)
+    return _json_ready(dict(game_id=game.game_id, snapshot=game,
+                            decision=evaluate_ticket(game, (offered,)), legs=(offered,)))
+
+
+def retime_sources(value, observed_at):
+    if isinstance(value, dict):
+        if {"provider", "reference", "observed_at"} <= value.keys():
+            value["observed_at"] = observed_at.isoformat()
+        for child in value.values():
+            retime_sources(child, observed_at)
+    elif isinstance(value, list):
+        for child in value:
+            retime_sources(child, observed_at)
 
 
 def unresolved():
@@ -58,19 +80,21 @@ def test_settlement_cannot_claim_win_with_unresolved_leg(tmp_path):
 
 def test_evaluation_records_exact_pregame_inputs(tmp_path):
     ledger = Ledger(tmp_path / "ledger.sqlite")
-    decision = ledger.evaluate_and_record("ticket-1", replace(snapshot(), kickoff=datetime.now(timezone.utc) + timedelta(hours=1)),
-                                          (leg(),), quote=TicketQuote(2.5, SOURCE, ("p1:rushing_yards:40",)))
+    game = fresh_snapshot()
+    offered = replace(leg(), source=game.source)
+    decision = ledger.evaluate_and_record("ticket-1", game, (offered,),
+                                          quote=TicketQuote(2.5, game.source, ("p1:rushing_yards:40",)))
     assert decision.approved
     assert ledger.verify()
     assert '"decimal_odds":2.5' in ledger.connection.execute("SELECT payload FROM events WHERE ticket_id='ticket-1'").fetchone()[0]
     with pytest.raises(sqlite3.IntegrityError):
-        ledger.evaluate_and_record("ticket-1", replace(snapshot(), kickoff=datetime.now(timezone.utc) + timedelta(hours=1)), (leg(),))
+        ledger.evaluate_and_record("ticket-1", game, (offered,))
 
 
 def test_stricter_evaluation_controls_are_frozen_and_replayed(tmp_path):
     ledger = Ledger(tmp_path / "ledger.sqlite")
-    game = replace(snapshot(), kickoff=datetime.now(timezone.utc) + timedelta(hours=1))
-    decision = ledger.evaluate_and_record("strict", game, (leg(),),
+    game = fresh_snapshot()
+    decision = ledger.evaluate_and_record("strict", game, (replace(leg(), source=game.source),),
                                           max_source_age_seconds=120,
                                           minimum_scenario_probability=0.06,
                                           aggressive_fraction=0.9)
@@ -86,13 +110,74 @@ def test_stricter_evaluation_controls_are_frozen_and_replayed(tmp_path):
 
 def test_historical_snapshot_cannot_be_backfilled_as_pregame(tmp_path):
     ledger = Ledger(tmp_path / "ledger.sqlite")
-    with pytest.raises(ValueError, match="precede kickoff"):
+    with pytest.raises(ValueError, match="30-minute cutoff"):
         ledger.evaluate_and_record("ticket-1", snapshot(), (leg(),))
+
+
+def test_recent_kickoff_does_not_make_old_snapshot_a_fresh_pregame_freeze(tmp_path):
+    ledger = Ledger(tmp_path / "ledger.sqlite")
+    payload = pregame_payload()
+    old = datetime.now(timezone.utc) - timedelta(minutes=6)
+    payload["snapshot"]["as_of"] = old.isoformat()
+    payload["decision"].update(approved=False, leg_probabilities={}, joint_probability=None)
+    retime_sources(payload, old)
+    with pytest.raises(ValueError, match="snapshot stale"):
+        ledger.append("stale-revision", "pregame", payload)
+    assert ledger.connection.execute("SELECT COUNT(*) FROM events").fetchone()[0] == 0
+
+
+def snf_pregame_payload(as_of):
+    payload = pregame_payload()
+    payload["snapshot"]["kickoff"] = "2026-11-09T01:20:00+00:00"
+    payload["snapshot"]["as_of"] = as_of.isoformat()
+    payload["decision"].update(approved=False, leg_probabilities={}, joint_probability=None)
+    retime_sources(payload, as_of)
+    return payload
+
+
+def test_pregame_freeze_accepts_exact_thirty_minute_cutoff(tmp_path, monkeypatch):
+    kickoff = datetime(2026, 11, 9, 1, 20, tzinfo=timezone.utc)
+    cutoff = kickoff - timedelta(minutes=30)
+    monkeypatch.setattr("football_engine.ledger._now", lambda: cutoff)
+    ledger = Ledger(tmp_path / "ledger.sqlite")
+    ledger.append("snf-boundary", "pregame", snf_pregame_payload(cutoff))
+    assert ledger.verify()
+
+
+@pytest.mark.parametrize("snapshot_offset", [timedelta(minutes=-1), timedelta(seconds=1)])
+def test_late_snf_revision_cannot_use_backdated_or_late_snapshot(tmp_path, monkeypatch, snapshot_offset):
+    kickoff = datetime(2026, 11, 9, 1, 20, tzinfo=timezone.utc)
+    cutoff = kickoff - timedelta(minutes=30)
+    monkeypatch.setattr("football_engine.ledger._now", lambda: cutoff + timedelta(seconds=1))
+    ledger = Ledger(tmp_path / "ledger.sqlite")
+    payload = snf_pregame_payload(cutoff + snapshot_offset)
+    with pytest.raises(ValueError, match="30-minute cutoff"):
+        ledger.append("snf-revision", "pregame", payload)
+    assert ledger.connection.execute("SELECT COUNT(*) FROM events").fetchone()[0] == 0
+
+
+def test_rehashed_late_pregame_record_fails_semantic_replay(tmp_path, monkeypatch):
+    import hashlib
+
+    kickoff = datetime(2026, 11, 9, 1, 20, tzinfo=timezone.utc)
+    cutoff = kickoff - timedelta(minutes=30)
+    monkeypatch.setattr("football_engine.ledger._now", lambda: cutoff)
+    ledger = Ledger(tmp_path / "ledger.sqlite")
+    ledger.append("snf-boundary", "pregame", snf_pregame_payload(cutoff))
+    recorded = (cutoff + timedelta(seconds=1)).isoformat()
+    body = ledger.connection.execute("SELECT payload FROM events").fetchone()[0]
+    digest = hashlib.sha256(f"{'0' * 64}|snf-boundary|pregame|{recorded}|{body}".encode()).hexdigest()
+    ledger.connection.execute("DROP TRIGGER immutable_events_update")
+    ledger.connection.execute("UPDATE events SET recorded_at=?, event_hash=?", (recorded, digest))
+    ledger.connection.commit()
+    assert not ledger.verify()
+    assert ledger.prospective_report()["status"] == "INVALID_LEDGER"
 
 
 def test_prospective_report_does_not_claim_edge_from_one_result(tmp_path):
     ledger = Ledger(tmp_path / "ledger.sqlite")
-    ledger.evaluate_and_record("ticket-1", replace(snapshot(), kickoff=datetime.now(timezone.utc) + timedelta(hours=1)), (leg(),))
+    game = fresh_snapshot()
+    ledger.evaluate_and_record("ticket-1", game, (replace(leg(), source=game.source),))
     ledger.append("ticket-1", "settlement", {"status": "unresolved", "legs": [unresolved()]})
     report = ledger.prospective_report()
     assert report["status"] == "NOT MEASURABLE"
@@ -120,10 +205,10 @@ def test_live_proposal_is_frozen_and_cannot_be_reused(tmp_path):
 
 def test_combined_quote_must_match_frozen_legs(tmp_path):
     ledger = Ledger(tmp_path / "ledger.sqlite")
-    game = replace(snapshot(), kickoff=datetime.now(timezone.utc) + timedelta(hours=1))
+    game = fresh_snapshot()
     with pytest.raises(ValueError, match="price provenance"):
-        ledger.evaluate_and_record("ticket-1", game, (leg(),),
-                                   quote=TicketQuote(2.5, SOURCE, ("other:rushing_yards:40",)))
+        ledger.evaluate_and_record("ticket-1", game, (replace(leg(), source=game.source),),
+                                   quote=TicketQuote(2.5, game.source, ("other:rushing_yards:40",)))
     assert ledger.connection.execute("SELECT COUNT(*) FROM events").fetchone()[0] == 0
 
 
@@ -159,6 +244,7 @@ def test_rejected_forecast_settles_without_inventing_probability(tmp_path, monke
     payload["snapshot"]["as_of"] = NOW.isoformat()
     payload["snapshot"]["kickoff"] = (NOW + timedelta(hours=1)).isoformat()
     payload["decision"].update(approved=False, leg_probabilities={}, joint_probability=None)
+    retime_sources(payload, NOW)
     monkeypatch.setattr("football_engine.ledger._now", lambda: NOW)
     ledger.append("ticket-1", "pregame", payload)
     monkeypatch.setattr("football_engine.ledger._now", lambda: NOW + timedelta(hours=8))
@@ -174,8 +260,8 @@ def test_prospective_report_scores_frozen_settled_forecast(tmp_path, monkeypatch
     from test_settlement import final_box, proof
     from football_engine.settlement import settle_recorded_ticket
     ledger = Ledger(tmp_path / "ledger.sqlite")
-    game = replace(snapshot(), game_id="123", kickoff=datetime.now(timezone.utc) + timedelta(hours=1))
-    decision = ledger.evaluate_and_record("ticket-1", game, (leg(),))
+    game = replace(fresh_snapshot(), game_id="123")
+    decision = ledger.evaluate_and_record("ticket-1", game, (replace(leg(), source=game.source),))
     probability = decision.joint_probability
     settled_at = game.kickoff + timedelta(hours=3)
     monkeypatch.setattr('football_engine.ledger._now', lambda: settled_at)
@@ -183,10 +269,41 @@ def test_prospective_report_scores_frozen_settled_forecast(tmp_path, monkeypatch
     settle_recorded_ticket(ledger, "ticket-1", box, proof(box, retrieved_at=settled_at.isoformat()))
     report = ledger.prospective_report()
     assert report["status"] == "NOT MEASURABLE"
-    assert report["settled_forecasts"] == 1
-    assert report["hit_rate"] == 1
-    assert report["brier_score"] == (probability - 1) ** 2
+    assert report["settled_forecasts"] == 0
+    assert report["hit_rate"] is None
+    assert report["brier_score"] is None
+    assert report["research_only"]["unpriced_pregame_forecasts"] == 1
+    assert report["research_only"]["hit_rate"] == 1
+    assert report["research_only"]["brier_score"] == (probability - 1) ** 2
     assert report["account_roi"] is None
+
+
+def test_priced_live_forecast_is_separate_from_quoted_pregame_performance(tmp_path, monkeypatch):
+    from test_engine import NOW
+    from test_settlement import final_box, proof
+    from football_engine.settlement import settle_recorded_ticket
+
+    source = replace(SOURCE, observed_at=NOW)
+    base = snapshot()
+    scenarios = tuple(replace(item, source=source, maximum_remaining={"p1": {"carries": 12}})
+                      for item in base.scenarios)
+    live = replace(base, game_id="123", as_of=NOW, kickoff=NOW - timedelta(hours=1), source=source,
+                   state=GameState(600, "in_progress", source, {"CHI": 20, "SEA": 9}),
+                   players={"p1": replace(base.players["p1"], source=source)}, scenarios=scenarios)
+    ledger = Ledger(tmp_path / "ledger.sqlite")
+    monkeypatch.setattr("football_engine.ledger._now", lambda: NOW)
+    decision = ledger.evaluate_and_record("live-priced", live, (replace(leg(), source=source),),
+                                          quote=TicketQuote(2.5, source, ("p1:rushing_yards:40",)))
+    assert decision.approved
+    settled_at = NOW + timedelta(hours=8)
+    monkeypatch.setattr("football_engine.ledger._now", lambda: settled_at)
+    box = final_box()
+    settle_recorded_ticket(ledger, "live-priced", box, proof(box, retrieved_at=settled_at.isoformat()))
+    report = ledger.prospective_report(minimum_settled=1)
+    assert report["status"] == "NOT MEASURABLE"
+    assert report["settled_forecasts"] == 0
+    assert report["research_only"]["live_forecasts"] == 1
+    assert report["research_only"]["settled_forecasts"] == 1
 
 
 # All evidence below is synthetic and is never reported as historical performance.
@@ -241,7 +358,10 @@ def test_valid_archived_ledger_passes_internal_audit_without_authenticity_claim(
     assert report["status"] == "PASS", report
     assert report["evidence"]["semantic_replay_verified"] is True
     assert report["evidence"]["external_authenticity_verified"] is False
-    assert ledger.prospective_report(minimum_settled=1)["status"] == "MEASURABLE_RESEARCH"
+    performance = ledger.prospective_report(minimum_settled=1)
+    assert performance["status"] == "MEASURABLE_RESEARCH"
+    assert performance["settled_forecasts"] == 1
+    assert performance["research_only"]["settled_forecasts"] == 0
 
 
 @pytest.mark.parametrize("field,value", [
@@ -261,6 +381,7 @@ def test_rehashed_semantically_false_settlement_blocks_audit_and_scoring(tmp_pat
     assert not ledger.verify()
     assert ledger.prospective_report()["status"] == "INVALID_LEDGER"
     assert audit_ledger_evidence(manifest(path), NOW + timedelta(hours=9))["status"] == "BLOCKED"
+    monkeypatch.setattr("football_engine.ledger._now", lambda: datetime.now(timezone.utc))
     with pytest.raises(ValueError, match="invalid ledger"):
         ledger.append("other", "pregame", pregame_payload())
 

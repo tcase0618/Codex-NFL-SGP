@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from math import ceil, exp, isfinite, lgamma, log, sqrt
 from typing import Literal
 
@@ -46,6 +46,7 @@ class Scenario:
     joint_samples: tuple[dict[str, bool], ...] = ()
     passing_td_per_attempt: dict[str, float] = field(default_factory=dict)
     role_sources: tuple[Source, ...] = ()
+    qb_change_teams: frozenset[str] = frozenset()
 
 
 @dataclass(frozen=True)
@@ -66,6 +67,9 @@ class Snapshot:
     source: Source
     state: GameState | None = None
     team_profile_versions: dict[str, str] = field(default_factory=dict)
+    qb_change_teams: frozenset[str] = frozenset()
+    qb_change_source: Source | None = None
+    qb_context: dict[str, dict] = field(default_factory=dict)
 
 
 @dataclass(frozen=True)
@@ -158,9 +162,16 @@ def _validate_inputs(snapshot, legs, max_age, minimum, aggressive) -> str | None
     if (not _text(snapshot.game_id) or not isinstance(snapshot.players, dict)
             or not isinstance(snapshot.scenarios, (tuple, list)) or not snapshot.scenarios):
         return "invalid snapshot or scenario structure"
+    if (not isinstance(snapshot.qb_change_teams, frozenset)
+            or any(not _text(team) for team in snapshot.qb_change_teams)):
+        return "invalid quarterback change evidence"
+    if snapshot.qb_change_teams and not _valid_source(snapshot.qb_change_source, snapshot.as_of):
+        return "missing quarterback change source provenance"
     markets = {*YARDAGE_OPPORTUNITY, "anytime_td", "passing_td"}
     opportunities = {"targets", "carries", "attempts", "red_zone_touches", "end_zone_targets", "unique_scoring_chances"}
     sources = [snapshot.source]
+    if snapshot.qb_change_source is not None:
+        sources.append(snapshot.qb_change_source)
     for pid, player in snapshot.players.items():
         if (not isinstance(player, Player) or not _text(pid) or pid != player.player_id
                 or not _text(player.team_id) or type(player.active) is not bool
@@ -190,8 +201,12 @@ def _validate_inputs(snapshot, legs, max_age, minimum, aggressive) -> str | None
     for scenario in snapshot.scenarios:
         if (not isinstance(scenario, Scenario) or not _text(scenario.name)
                 or scenario.name in names or not _number(scenario.weight) or not 0 < scenario.weight <= 1
-                or not isinstance(scenario.role_sources, (tuple, list))):
+                or not isinstance(scenario.role_sources, (tuple, list))
+                or not isinstance(scenario.qb_change_teams, frozenset)
+                or any(not _text(team) for team in scenario.qb_change_teams)):
             return "invalid scenario weights or structure"
+        if scenario.qb_change_teams and not scenario.role_sources:
+            return "missing quarterback change scenario role provenance"
         names.add(scenario.name)
         sources.extend((scenario.source, *scenario.role_sources))
         for mapping, allowed, kind in ((scenario.remaining, opportunities, "volume"),
@@ -289,6 +304,12 @@ def compare_ticket_prices(snapshot: Snapshot, candidates: dict[str, tuple[tuple[
     if (not isinstance(candidates, dict) or not _number(max_source_age_seconds)
             or not 0 <= max_source_age_seconds <= 300):
         return ()
+    # Ticket prices are pregame decisions; a fresh quote cannot reopen the
+    # archived 30-minute decision window.
+    if (not isinstance(snapshot, Snapshot) or not _aware(snapshot.as_of)
+            or not _aware(snapshot.kickoff)
+            or snapshot.as_of > snapshot.kickoff - timedelta(minutes=30)):
+        return ()
     for ticket_id, candidate in candidates.items():
         if not _text(ticket_id) or not isinstance(candidate, (tuple, list)) or len(candidate) != 2:
             continue
@@ -355,6 +376,41 @@ def evaluate_ticket(snapshot: Snapshot, legs: tuple[Leg, ...], *, max_source_age
     audit["scenario"] = "pass" if "invalid scenario weights" not in reasons else "fail"
     if len({(leg.player_id, leg.market, leg.line) for leg in legs}) != len(legs):
         reasons.append("duplicate leg")
+    qb_dependent = tuple(leg for leg in legs if leg.market in {"receiving_yards", "passing_yards", "passing_td", "anytime_td"})
+    for team in snapshot.qb_change_teams | frozenset().union(*(scenario.qb_change_teams for scenario in snapshot.scenarios)):
+        if team not in snapshot.qb_change_teams:
+            reasons.append(f"quarterback change scenario lacks snapshot evidence: {team}")
+            continue
+        affected = tuple(leg for leg in qb_dependent if leg.team_id == team)
+        if not affected:
+            continue
+        changed = tuple(s for s in snapshot.scenarios if team in s.qb_change_teams)
+        baseline = tuple(s for s in snapshot.scenarios if team not in s.qb_change_teams)
+        if not changed or not baseline:
+            reasons.append(f"quarterback change downside scenario missing: {team}")
+            continue
+        if sum(s.weight for s in changed) < minimum_scenario_probability:
+            reasons.append(f"quarterback change downside scenario below stress weight: {team}")
+        def output(scenario: Scenario, leg: Leg) -> float | None:
+            remaining = scenario.remaining.get(leg.player_id, {})
+            if leg.market == "anytime_td":
+                volume = remaining.get("unique_scoring_chances")
+                if volume is None:
+                    volume = remaining.get("red_zone_touches", 0) + remaining.get("end_zone_targets", 0)
+                efficiency = scenario.touchdown_rate.get(leg.player_id)
+            elif leg.market == "passing_td":
+                volume = remaining.get("attempts")
+                efficiency = scenario.passing_td_per_attempt.get(leg.player_id)
+            else:
+                volume = remaining.get(YARDAGE_OPPORTUNITY[leg.market])
+                efficiency = scenario.yards_per_opportunity.get(leg.player_id, {}).get(leg.market)
+            return volume * efficiency if volume is not None and efficiency is not None else None
+        # One shared change scenario must lower every affected leg's modeled
+        # output. This checks structure, without assigning a new shock weight.
+        if not any(all(output(s, leg) is not None and
+                       any(output(b, leg) is not None and output(s, leg) < output(b, leg)
+                           for b in baseline) for leg in affected) for s in changed):
+            reasons.append(f"quarterback change downside unmodeled: {team}")
     scenario_joint: list[float] = []
     scenario_leg_probs: list[dict[str, float]] = []
     for scenario in snapshot.scenarios:
@@ -471,6 +527,9 @@ def evaluate_ticket(snapshot: Snapshot, legs: tuple[Leg, ...], *, max_source_age
                                         or "live clock" in reason for reason in reasons) else "pass"
     audit["correlation"] = "fail" if any("scenario stress" in reason or "correlation unverified" in reason
                                           for reason in reasons) else "pass"
+    if any("quarterback change" in reason for reason in reasons):
+        audit["scenario"] = "fail"
+        audit["correlation"] = "fail"
     audit["ledger"] = "pass" if snapshot.game_id and all(leg.source.reference for leg in legs) else "fail"
     if audit["ledger"] == "fail":
         reasons.append("ledger identifiers missing")

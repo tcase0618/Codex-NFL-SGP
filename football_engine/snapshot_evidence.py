@@ -20,13 +20,17 @@ def source(value):
 
 def decode(value):
     players={pid:Player(p['player_id'],p['team_id'],p['active'],frozenset(p['eligible_markets']),source(p['source'])) for pid,p in value['players'].items()}
+    qb_context={team:{**item,'source':source(item['source'])} for team,item in value.get('qb_context',{}).items()}
     scenarios=[]
     for s in value['scenarios']:
         scenarios.append(Scenario(s['name'],s['weight'],s['remaining'],s['yards_per_opportunity'],s['touchdown_rate'],source(s['source']),
-            s.get('maximum_remaining',{}),tuple(s.get('joint_samples',[])),s.get('passing_td_per_attempt',{}),tuple(source(v) for v in s.get('role_sources',[]))))
+            s.get('maximum_remaining',{}),tuple(s.get('joint_samples',[])),s.get('passing_td_per_attempt',{}),tuple(source(v) for v in s.get('role_sources',[])),
+            frozenset(s.get('qb_change_teams',[]))))
     state=value.get('state')
     if state is not None:state=GameState(state['seconds_remaining'],state['status'],source(state['source']),state.get('scores',{}))
-    return Snapshot(value['game_id'],stamp(value['as_of']),stamp(value['kickoff']),players,tuple(scenarios),source(value['source']),state,value.get('team_profile_versions',{}))
+    return Snapshot(value['game_id'],stamp(value['as_of']),stamp(value['kickoff']),players,tuple(scenarios),source(value['source']),state,value.get('team_profile_versions',{}),
+                    frozenset(value.get('qb_change_teams',[])), source(value['qb_change_source']) if value.get('qb_change_source') else None,
+                    qb_context)
 
 
 def audit_opportunity_evidence(manifest, as_of):

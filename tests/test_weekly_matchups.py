@@ -71,9 +71,9 @@ def test_recorded_tickets_bind_exact_game_kickoff_and_both_teams(tmp_path):
     ledger.connection.close()
     game = {"game_id": proposal["game_id"], "kickoff": proposal["snapshot"]["kickoff"], "home": "CHI", "away": "SEA"}
     report = game_tiers(game, path)
-    assert report["tiers"][0]["tickets"][0]["ticket_id"] == "fixture-three"
-    assert report["tiers"][0]["tickets"][0]["decision_status"] == "BLOCKED"
-    assert report["tiers"][0]["tickets"][0]["tennessee_quote_verified"] is False
+    assert all(not tier["tickets"] for tier in report["tiers"])
+    assert report["excluded_research_count"] == 1
+    assert report["status"] == "NO_DISPLAYABLE_PREGAME_TICKETS"
     for change in ({"game_id": "other"}, {"away": "TB"}, {"kickoff": (datetime.now(timezone.utc) + timedelta(days=2)).isoformat()}):
         assert not game_tiers({**game, **change}, path)["tiers"][0]["tickets"]
     assert path.is_file()
@@ -98,4 +98,34 @@ def test_three_scorer_proposal_appears_only_in_anytime_td_family(tmp_path):
             "home": "CHI", "away": "SEA"}
     report = game_tiers(game, path)
     assert not report["tiers"][0]["tickets"]
-    assert report["tiers"][3]["tickets"][0]["ticket_id"] == "fixture-td"
+    assert not report["tiers"][3]["tickets"]
+    assert report["excluded_research_count"] == 1
+
+
+def test_legacy_late_revision_is_hidden_from_weekly_tiers(tmp_path, monkeypatch):
+    from football_engine.ledger import Ledger, _replay
+    from test_ledger import pregame_payload
+
+    path = tmp_path / "legacy.sqlite"
+    ledger = Ledger(path)
+    proposal = pregame_payload()
+    proposal["decision"] = {"approved": False, "leg_probabilities": {},
+                            "joint_probability": None, "reasons": ["fixture"]}
+    original = proposal["legs"][0]
+    proposal["legs"] = [{**original, "player_id": str(i),
+                         "team_id": "CHI" if i != 1 else "SEA"} for i in range(3)]
+    ledger.append("revision", "pregame", proposal)
+    ledger.connection.close()
+    game = {"game_id": proposal["game_id"], "kickoff": proposal["snapshot"]["kickoff"],
+            "home": "CHI", "away": "SEA"}
+
+    def legacy_replay(rows, cutoff):
+        proposals, settlements = _replay(rows, cutoff)
+        payload, _ = proposals["revision"]
+        late = datetime.fromisoformat(game["kickoff"]) - timedelta(minutes=27)
+        return {"revision": (payload, late)}, settlements
+
+    monkeypatch.setattr("football_engine.ledger._replay", legacy_replay)
+    report = game_tiers(game, path)
+    assert all(not tier["tickets"] for tier in report["tiers"])
+    assert report["betting_ready"] is False

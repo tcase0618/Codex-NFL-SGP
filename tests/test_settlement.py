@@ -42,8 +42,10 @@ def test_official_final_settles_frozen_ticket(tmp_path, monkeypatch):
 
 
 def test_nonfinal_and_changed_box_are_rejected(tmp_path):
+    from test_ledger import fresh_snapshot
     ledger = Ledger(tmp_path / "ledger.sqlite")
-    ledger.evaluate_and_record("ticket-1", replace(snapshot(), game_id="123", kickoff=datetime.now(timezone.utc) + timedelta(hours=1)), (leg(),))
+    game = replace(fresh_snapshot(), game_id="123")
+    ledger.evaluate_and_record("ticket-1", game, (replace(leg(), source=game.source),))
     box = final_box()
     source = proof(box)
     box["boxscore"]["players"][0]["statistics"][0]["athletes"][0]["stats"][1] = "70"

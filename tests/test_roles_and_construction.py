@@ -5,12 +5,30 @@ import pytest
 
 from football_engine.engine import Leg, Player, evaluate_ticket, leg_key
 from football_engine.roles import ReceivingRole, apply_receiving_roles
-from football_engine.construction import construct_tickets, construct_anytime_td_tickets
+from football_engine.construction import construct_tickets, construct_anytime_td_tickets, verify_qb_context
 from football_engine.settlement import _final_totals
 from research.collect_team_context import parse_tables
 from research.team_candidates import team_candidates
 from test_engine import NOW, SOURCE, snapshot
 from test_settlement import final_box
+
+
+def test_audited_passing_pool_requires_sourced_current_and_baseline_qb_ids():
+    offered = (Leg("wr", "CHI", "receiving_yards", 95.5, 0, 2, SOURCE),)
+    game = snapshot()
+    assert "missing game-specific" in verify_qb_context(game, offered)[0]
+    assert "missing game-specific" in verify_qb_context(
+        game, (Leg("rb", "CHI", "anytime_td", 1, 0, 2, SOURCE),))[0]
+    context = {"CHI": {"current_starter_id": "qb-1", "baseline_starter_id": "qb-1", "source": SOURCE}}
+    assert verify_qb_context(replace(game, qb_context=context), offered) == ()
+    changed = {"CHI": {**context["CHI"], "current_starter_id": "qb-2"}}
+    assert "not declared" in verify_qb_context(replace(game, qb_context=changed), offered)[0]
+    stale = {"CHI": {**context["CHI"], "source": replace(SOURCE, observed_at=NOW - timedelta(minutes=6))}}
+    assert "source unavailable" in verify_qb_context(replace(game, qb_context=stale), offered)[0]
+    from football_engine.ledger import _json_ready
+    from football_engine.snapshot_evidence import decode
+    restored = decode(_json_ready(replace(game, qb_context=context)))
+    assert verify_qb_context(restored, offered) == ()
 
 
 def test_promoted_backup_inherits_supported_targets_without_inventing_td_role():

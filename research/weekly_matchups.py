@@ -1,5 +1,5 @@
 """Weekly calendar and exact-game recorded research tickets; no wager creation."""
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 import hashlib
 import json
 from pathlib import Path
@@ -114,6 +114,7 @@ def game_tiers(game, ledger_path=None, *, as_of=None):
                   "status": "NOT_GENERATED", "tickets": []})
     report = {"game_id": game["game_id"], "tiers": tiers, "book": "FanDuel", "state": "Tennessee",
               "betting_ready": False, "status": "NO_RECORDED_TICKETS", "source": None,
+              "excluded_research_count": 0,
               "reason": "No frozen game-specific tickets are available. Forecasts, player eligibility and actual offered lines are required."}
     if ledger_path is None:
         return report
@@ -133,19 +134,31 @@ def game_tiers(game, ledger_path=None, *, as_of=None):
             snapshot = proposal["snapshot"]
             legs = proposal["legs"]
             if instant(snapshot["kickoff"]) != instant(game["kickoff"]): continue
+            decision_cutoff = instant(game["kickoff"]) - timedelta(minutes=30)
+            if (recorded > decision_cutoff
+                    or instant(snapshot["as_of"]) > decision_cutoff):
+                report["excluded_research_count"] += 1
+                continue
+            if instant(snapshot["as_of"]) >= instant(game["kickoff"]):
+                report["excluded_research_count"] += 1
+                continue
             if {leg["team_id"] for leg in legs} != {game["home"], game["away"]}: continue
+            quote = proposal.get("quote")
+            if proposal["decision"].get("approved") is not True or quote is None:
+                report["excluded_research_count"] += 1
+                continue
+            if quote.get("source", {}).get("provider") != "FanDuel":
+                report["excluded_research_count"] += 1
+                continue
             family = "anytime_td" if len(legs) == 3 and all(
                 leg["market"] == "anytime_td" and leg["line"] == 1 for leg in legs
             ) else "mixed"
             tier = next((t for t in tiers if t["leg_count"] == len(legs)
                          and t["market_family"] == family), None)
             if tier is None: continue
-            quote = proposal.get("quote")
-            provider = (quote or {}).get("source", {}).get("provider", "")
-            if quote and "fanduel" not in provider.lower(): continue
             tier["tickets"].append({"ticket_id": ticket, "recorded_at": recorded.isoformat(),
                                     "legs": [{k: leg[k] for k in ("player_id", "team_id", "market", "line")} for leg in legs],
-                                    "quote": quote, "decision_status": "RESEARCH_ONLY" if proposal["decision"].get("approved") else "BLOCKED",
+                                    "quote": quote, "decision_status": "RESEARCH_ONLY",
                                     "reasons": proposal["decision"].get("reasons", []),
                                     "settlement_status": settlements.get(ticket, {}).get("status", "unresolved"),
                                     "price_status": "FROZEN_OBSERVATION_NOT_LIVE" if quote else "UNAVAILABLE",
@@ -156,6 +169,9 @@ def game_tiers(game, ledger_path=None, *, as_of=None):
         report["source"] = {"path": str(path), "sha256": digest}
         if any(t["tickets"] for t in tiers):
             report.update(status="RECORDED_RESEARCH", reason="Frozen research observations, not live executable offers. Tennessee book availability is not certified.")
+        elif report["excluded_research_count"]:
+            report.update(status="NO_DISPLAYABLE_PREGAME_TICKETS",
+                          reason="Recorded drafts were excluded because they lacked cutoff, approval or exact combined FanDuel price evidence.")
     except (ValueError, OSError, KeyError, TypeError, sqlite3.Error):
         for tier in tiers: tier.update(status="UNAVAILABLE", tickets=[])
         report.update(status="UNAVAILABLE", reason="The configured ticket ledger could not be verified.")

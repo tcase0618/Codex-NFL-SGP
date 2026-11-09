@@ -37,6 +37,104 @@ def test_touchdown_opportunity_is_separate_from_rushing_yards():
     assert len(decision.audit) == 7
 
 
+def test_yardage_and_team_score_do_not_supply_missing_player_td_opportunity():
+    game = snapshot()
+    scenarios = tuple(replace(item, remaining={"p1": {"carries": 20}}) for item in game.scenarios)
+    game = replace(game, scenarios=scenarios, state=GameState(3600, "scheduled", SOURCE, {"CHI": 33, "SEA": 10}))
+    decision = evaluate_ticket(game, (leg("anytime_td", 1),))
+    assert_blocked(decision)
+    assert any("missing touchdown opportunity" in reason for reason in decision.reasons)
+
+
+def test_qb_change_requires_shared_lower_output_scenario_for_receivers():
+    game = snapshot()
+    receiver = Player("wr", "CHI", True, frozenset({"receiving_yards"}), SOURCE)
+    offered = Leg("wr", "CHI", "receiving_yards", 25, 0, 2, SOURCE)
+    baseline = replace(game.scenarios[0], remaining={"wr": {"targets": 8}},
+                       yards_per_opportunity={"wr": {"receiving_yards": 10}})
+    changed = replace(game.scenarios[1], remaining={"wr": {"targets": 8}},
+                      yards_per_opportunity={"wr": {"receiving_yards": 10}})
+    game = replace(game, players={"wr": receiver}, scenarios=(baseline, changed),
+                   qb_change_teams=frozenset({"CHI"}), qb_change_source=SOURCE)
+    missing = evaluate_ticket(game, (offered,))
+    assert_blocked(missing)
+    assert any("downside scenario missing" in reason for reason in missing.reasons)
+    unchanged = evaluate_ticket(replace(game, scenarios=(baseline, replace(changed, qb_change_teams=frozenset({"CHI"}), role_sources=(SOURCE,)))), (offered,))
+    assert_blocked(unchanged)
+    assert any("downside unmodeled" in reason for reason in unchanged.reasons)
+    changed = replace(changed, qb_change_teams=frozenset({"CHI"}), role_sources=(SOURCE,),
+                      remaining={"wr": {"targets": 5}})
+    decision = evaluate_ticket(replace(game, scenarios=(baseline, changed)), (offered,))
+    assert decision.approved
+    assert decision.audit["scenario"] == "pass"
+    token_shock = replace(game, scenarios=(replace(baseline, weight=.99), replace(changed, weight=.01)))
+    decision = evaluate_ticket(token_shock, (offered,))
+    assert_blocked(decision)
+    assert any("below stress weight" in reason for reason in decision.reasons)
+
+
+def test_qb_change_scenario_must_be_bound_to_snapshot_evidence():
+    game = snapshot()
+    scenario = replace(game.scenarios[0], qb_change_teams=frozenset({"CHI"}), role_sources=(SOURCE,))
+    decision = evaluate_ticket(replace(game, scenarios=(scenario, game.scenarios[1])), (leg(),))
+    assert_blocked(decision)
+    assert any("lacks snapshot evidence" in reason for reason in decision.reasons)
+
+
+def test_qb_change_requires_source_and_survives_frozen_snapshot_decode():
+    from football_engine.ledger import _json_ready
+    from football_engine.snapshot_evidence import decode
+
+    game = snapshot()
+    flagged = replace(game, qb_change_teams=frozenset({"CHI"}))
+    assert any("quarterback change source" in reason for reason in
+               evaluate_ticket(flagged, (leg(),)).reasons)
+    changed = replace(game.scenarios[1], qb_change_teams=frozenset({"CHI"}),
+                      role_sources=(SOURCE,))
+    sourced = replace(flagged, qb_change_source=SOURCE,
+                      scenarios=(game.scenarios[0], changed))
+    restored = decode(_json_ready(sourced))
+    assert restored.qb_change_teams == sourced.qb_change_teams
+    assert restored.qb_change_source == sourced.qb_change_source
+    assert restored.scenarios[1].qb_change_teams == changed.qb_change_teams
+    assert restored.scenarios[1].role_sources == changed.role_sources
+
+
+def test_qb_change_must_stress_touchdown_chances_independently_of_carries():
+    game = snapshot()
+    changed = replace(game.scenarios[1], qb_change_teams=frozenset({"CHI"}),
+                      role_sources=(SOURCE,))
+    flagged = replace(game, scenarios=(game.scenarios[0], changed),
+                      qb_change_teams=frozenset({"CHI"}), qb_change_source=SOURCE)
+    unchanged_td = evaluate_ticket(flagged, (leg("anytime_td", 1),))
+    assert not unchanged_td.approved
+    assert any("quarterback change downside unmodeled" in reason for reason in unchanged_td.reasons)
+    changed = replace(changed, remaining={"p1": {"carries": 12, "red_zone_touches": 1}})
+    stressed = evaluate_ticket(replace(flagged, scenarios=(game.scenarios[0], changed)),
+                               (leg("anytime_td", 1),))
+    assert stressed.approved
+
+
+def test_shared_qb_shock_blocks_correlated_receiver_ticket():
+    game = snapshot()
+    players = {pid: Player(pid, "CHI", True, frozenset({"receiving_yards"}), SOURCE) for pid in ("wr1", "wr2")}
+    offered = tuple(Leg(pid, "CHI", "receiving_yards", 10, 0, 2, SOURCE) for pid in players)
+    keys = tuple(f"{pid}:receiving_yards:10" for pid in players)
+    baseline = replace(game.scenarios[0], remaining={pid: {"targets": 8} for pid in players},
+                       yards_per_opportunity={pid: {"receiving_yards": 10} for pid in players},
+                       joint_samples=tuple({key: True for key in keys} for _ in range(100)))
+    changed = replace(game.scenarios[1], remaining={pid: {"targets": 0} for pid in players},
+                      yards_per_opportunity={pid: {"receiving_yards": 10} for pid in players},
+                      qb_change_teams=frozenset({"CHI"}),
+                      role_sources=(SOURCE,),
+                      joint_samples=tuple({key: False for key in keys} for _ in range(100)))
+    game = replace(game, players=players, scenarios=(baseline, changed), qb_change_teams=frozenset({"CHI"}), qb_change_source=SOURCE)
+    decision = evaluate_ticket(game, offered)
+    assert_blocked(decision)
+    assert any("scenario stress failed" in reason for reason in decision.reasons)
+    assert decision.audit["correlation"] == "fail"
+
+
 def test_pregame_current_total_cannot_make_future_leg_certain():
     game = snapshot()
     for market, line in (("rushing_yards", 40), ("anytime_td", 1)):
@@ -143,6 +241,26 @@ def test_exact_combined_quote_ranks_base_above_unrewarding_alt():
     assert not compare_ticket_prices(snapshot(), {"wrong": ((leg(line=40),), wrong_combination)})
     cheap = TicketQuote(1.01, SOURCE, ("p1:rushing_yards:40",))
     assert "no positive illustrative price edge" in screen_prices(snapshot(), {"cheap": ((leg(),), cheap)}).reasons
+
+
+def test_exact_combined_quote_closes_at_pregame_30_minute_cutoff():
+    game = snapshot()
+    quote = TicketQuote(2.5, SOURCE, ("p1:rushing_yards:40",))
+    candidate = {"ticket": ((leg(),), quote)}
+    assert len(compare_ticket_prices(game, candidate)) == 1
+    for minutes_before in (30, 29):
+        as_of = game.kickoff - timedelta(minutes=minutes_before)
+        fresh = replace(SOURCE, observed_at=as_of)
+        late = replace(game, as_of=as_of, source=fresh,
+                       players={"p1": replace(PLAYER, source=fresh)},
+                       scenarios=tuple(replace(item, source=fresh) for item in game.scenarios))
+        late_leg = replace(leg(), source=fresh)
+        late_quote = TicketQuote(2.5, fresh, ("p1:rushing_yards:40",))
+        assert evaluate_ticket(late, (late_leg,)).approved
+        comparisons = compare_ticket_prices(late, {"ticket": ((late_leg,), late_quote)})
+        assert bool(comparisons) is (minutes_before == 30)
+        assert screen_prices(late, {"ticket": ((late_leg,), late_quote)}).status == (
+            "research_only" if minutes_before == 30 else "not_measurable")
 
 
 def test_live_ticket_requires_clock_and_hard_caps():

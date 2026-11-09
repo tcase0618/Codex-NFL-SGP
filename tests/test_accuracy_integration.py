@@ -100,8 +100,9 @@ def test_official_table_logo_separates_unlinked_opponent_rows():
 
 def test_settlement_cannot_rewrite_frozen_forecast_or_settle_before_game(tmp_path,monkeypatch):
     from datetime import datetime,timezone
-    ledger=Ledger(tmp_path/'ledger.sqlite');game=replace(snapshot(),kickoff=datetime.now(timezone.utc)+timedelta(hours=1))
-    decision=ledger.evaluate_and_record('t',game,(leg(),))
+    from test_ledger import fresh_snapshot
+    ledger=Ledger(tmp_path/'ledger.sqlite');game=fresh_snapshot()
+    decision=ledger.evaluate_and_record('t',game,(replace(leg(),source=game.source),))
     payload=dict(status='won',source='fixture:final',legs=[dict(status='won',player_id='p1',team_id='CHI',market='rushing_yards',observed=69,threshold=40,odds_decimal=2.5,predicted_probability=decision.joint_probability,source='fixture:final',error_category='none')])
     with pytest.raises(ValueError,match='precede kickoff'):ledger.append('t','settlement',payload)
     monkeypatch.setattr('football_engine.ledger._now',lambda:game.kickoff+timedelta(hours=3))

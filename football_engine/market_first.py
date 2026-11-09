@@ -4,7 +4,7 @@ This checks a frozen, machine-readable capture. A file hash cannot authenticate
 the sportsbook itself; the capture still needs independent source review.
 """
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import datetime, timedelta
 import hashlib
 import json
 from math import isfinite
@@ -70,9 +70,11 @@ def verify_offered_pool(snapshot: Snapshot, offered_legs, capture_path,
                 or parsed.username or parsed.password):
             raise ValueError("market capture must reference FanDuel HTTPS source")
         observed = _time(source["observed_at"])
-        if (snapshot.as_of.utcoffset() is None or snapshot.kickoff <= snapshot.as_of
+        cutoff = snapshot.kickoff - timedelta(minutes=30)
+        if (snapshot.as_of.utcoffset() is None or snapshot.as_of > cutoff
+                or observed > cutoff
                 or not 0 <= (snapshot.as_of - observed).total_seconds() <= 300):
-            raise ValueError("market capture future, stale or after kickoff")
+            raise ValueError("market capture future, stale or after 30-minute decision cutoff")
         offers = data["offers"]
         if not isinstance(offers, list) or not offers or len(offers) != len(offered_legs):
             raise ValueError("complete offered pool required")

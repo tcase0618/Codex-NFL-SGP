@@ -3,7 +3,7 @@ from dataclasses import replace
 from football_engine.accuracy import check_clearance, report_hash, evidence_fingerprint
 from football_engine.engine import AUDITORS
 from football_engine.construction import construct_audited_tickets
-from test_engine import snapshot, leg, NOW
+from test_engine import snapshot, leg, NOW, SOURCE
 from test_market_first import capture
 
 
@@ -29,7 +29,8 @@ def test_missing_or_forged_swarm_report_cannot_enable_candidates():
 def test_clearance_rechecks_scope_artifact_hash_and_all_seven_roles(tmp_path):
     import hashlib
     path=tmp_path/'proof';path.write_text('real artifact')
-    game=replace(snapshot(),team_profile_versions={'CHI':'chi','SEA':'sea'})
+    game=replace(snapshot(),team_profile_versions={'CHI':'chi','SEA':'sea'},
+                 qb_context={'CHI':{'current_starter_id':'qb-1','baseline_starter_id':'qb-1','source':SOURCE}})
     _, captured_leg, capture_path, capture_hash = capture(tmp_path)
     report=dict(as_of=NOW.isoformat(),status='PASS',scope={'game_id':game.game_id,'model_version':'m','team_profile_versions':game.team_profile_versions},
                 auditors={n:{'status':'PASS','reasons':[],'evidence':{'reference':str(path)}} for n in AUDITORS},

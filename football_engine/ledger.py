@@ -2,7 +2,7 @@ import hashlib
 import json
 import sqlite3
 from dataclasses import asdict, is_dataclass
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from math import isfinite
 
@@ -77,12 +77,15 @@ def _validate_proposal(payload, kind, recorded):
         raise ValueError("proposal requires game, snapshot, decision, and legs")
     game, decision, legs = payload["snapshot"], payload["decision"], payload["legs"]
     kickoff = _time(game["kickoff"])
+    pregame_cutoff = kickoff - timedelta(minutes=30)
     # Preserve a specific chronology error even for incomplete historical fixtures.
-    if kind == "pregame" and not recorded < kickoff:
-        raise ValueError("pregame record must precede kickoff")
+    if kind == "pregame" and recorded > pregame_cutoff:
+        raise ValueError("pregame record must meet kickoff minus 30-minute cutoff")
     frozen = _time(game["as_of"])
-    if not frozen <= recorded or (kind == "pregame" and not frozen < kickoff):
+    if not frozen <= recorded or (kind == "pregame" and frozen > pregame_cutoff):
         raise ValueError("ledger proposal chronology invalid")
+    if kind == "pregame" and (recorded - frozen).total_seconds() > 300:
+        raise ValueError("pregame snapshot stale at ledger freeze")
     if not _text(payload["game_id"]) or payload["game_id"] != game.get("game_id"):
         raise ValueError("frozen ticket/game identifiers incomplete")
     if not isinstance(legs, list) or not legs or not isinstance(decision, dict) or type(decision.get("approved")) is not bool:
@@ -330,31 +333,49 @@ class Ledger:
             return False
 
     def prospective_report(self, minimum_settled: int = 100) -> dict:
+        """Score quoted pregame forecasts; expose other forecasts as research only."""
         if type(minimum_settled) is not int or minimum_settled < 1:
             raise ValueError("minimum_settled must be positive")
         if not self.verify():
             return {'status':'INVALID_LEDGER','settled_forecasts':None,'hit_rate':None,'brier_score':None,'account_roi':None}
         probabilities = []
         outcomes = []
-        for proposal, settlement in self.connection.execute("""
-            SELECT proposal.payload, settlement.payload FROM events AS proposal
+        research_probabilities = []
+        research_outcomes = []
+        research_counts = {"unpriced_pregame_forecasts": 0, "live_forecasts": 0}
+        for kind, proposal, settlement in self.connection.execute("""
+            SELECT proposal.kind, proposal.payload, settlement.payload FROM events AS proposal
             JOIN events AS settlement ON settlement.ticket_id=proposal.ticket_id AND settlement.kind='settlement'
             WHERE proposal.kind IN ('pregame','live') ORDER BY proposal.sequence
         """):
-            forecast = json.loads(proposal)["decision"]
+            frozen = json.loads(proposal)
+            forecast = frozen["decision"]
             result = json.loads(settlement)
             probability = forecast.get("joint_probability")
             complete = all(item.get("status") in {"won", "lost"} for item in result["legs"])
             if forecast.get("approved") is True and probability is not None and complete and result.get("status") in {"won", "lost"}:
-                probabilities.append(probability)
-                outcomes.append(int(result["status"] == "won"))
+                outcome = int(result["status"] == "won")
+                if kind == "pregame" and frozen.get("quote") is not None:
+                    probabilities.append(probability)
+                    outcomes.append(outcome)
+                else:
+                    research_probabilities.append(probability)
+                    research_outcomes.append(outcome)
+                    research_counts["live_forecasts" if kind == "live" else "unpriced_pregame_forecasts"] += 1
         count = len(outcomes)
         return {"status": "MEASURABLE_RESEARCH" if count >= minimum_settled else "NOT MEASURABLE",
                 "settled_forecasts": count, "minimum_settled": minimum_settled,
                 "hit_rate": sum(outcomes) / count if count else None,
                 "brier_score": sum((probability - outcome) ** 2 for probability, outcome
                                    in zip(probabilities, outcomes)) / count if count else None,
-                "account_roi": None}
+                "account_roi": None,
+                "research_only": {
+                    "settled_forecasts": len(research_outcomes), **research_counts,
+                    "hit_rate": sum(research_outcomes) / len(research_outcomes) if research_outcomes else None,
+                    "brier_score": sum((probability - outcome) ** 2 for probability, outcome
+                                       in zip(research_probabilities, research_outcomes)) / len(research_outcomes)
+                                   if research_outcomes else None,
+                }}
 
 
 def audit_ledger_evidence(manifest, as_of):

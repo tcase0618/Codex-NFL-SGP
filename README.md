@@ -2,6 +2,8 @@
 
 Research and ticket screening engine for football player props. It accepts external, timestamped roster, market, game-state, and scenario snapshots. It does not fetch prices, place bets, or infer historical outcomes.
 
+The [November 8 Sunday remediation](docs/nov-08-2026-root-cause-remediation.md) documents the cutoff, fresh-snapshot, quarterback-change, pricing, and weekly-display controls added after the retrospective ticket audit. Historical research threshold clears and late revisions are not prospective betting results.
+
 ## November 2 postmortem changes
 
 - Touchdown probability uses remaining red-zone touches and end-zone targets with a separate conversion rate. Rushing or receiving yards do not stand in for scoring chances.

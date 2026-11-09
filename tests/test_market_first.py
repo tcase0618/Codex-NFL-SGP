@@ -59,3 +59,17 @@ def test_audited_entry_blocks_before_selection_without_market_capture():
     assert result.status == 'BLOCKED'
     assert 'market capture required' in result.reasons[0]
     assert result.candidates == ()
+
+
+def test_late_revision_cannot_reuse_a_fresh_quote_after_decision_cutoff(tmp_path):
+    game, offered, path, digest = capture(tmp_path)
+    late_time = game.kickoff - timedelta(minutes=27)
+    late_game = replace(game, as_of=late_time)
+    late_offer = replace(offered, source=replace(offered.source, observed_at=late_time))
+    data = json.loads(path.read_text(encoding='utf-8'))
+    data['source']['observed_at'] = late_time.isoformat()
+    path.write_text(json.dumps(data), encoding='utf-8')
+    digest = hashlib.sha256(path.read_bytes()).hexdigest()
+    result = verify_offered_pool(late_game, (late_offer,), path, expected_sha256=digest)
+    assert result.status == 'BLOCKED'
+    assert 'decision cutoff' in result.reasons[0]

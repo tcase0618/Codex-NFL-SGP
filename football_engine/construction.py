@@ -1,5 +1,6 @@
 """Reviewable mixed-market candidates; engine approval remains mandatory."""
 from dataclasses import dataclass
+from datetime import datetime
 from itertools import combinations
 
 from .engine import Decision, Leg, Snapshot, evaluate_ticket, leg_key
@@ -18,6 +19,34 @@ class AuditedConstructions:
     candidates: tuple[Construction, ...]
 
 
+def verify_qb_context(snapshot: Snapshot, offered_legs) -> tuple[str, ...]:
+    """Require explicit sourced starter identity for QB-dependent offered markets."""
+    from .engine import Source
+
+    if not isinstance(snapshot, Snapshot) or not isinstance(snapshot.qb_context, dict):
+        return ("missing game-specific quarterback starter context",)
+    teams = {leg.team_id for leg in offered_legs if isinstance(leg, Leg)}
+    reasons = []
+    for team in sorted(teams):
+        context = snapshot.qb_context.get(team)
+        if not isinstance(context, dict):
+            reasons.append(f"missing game-specific quarterback starter context: {team}")
+            continue
+        current = context.get("current_starter_id")
+        baseline = context.get("baseline_starter_id")
+        proof = context.get("source")
+        if (not isinstance(current, str) or not current.strip()
+                or not isinstance(baseline, str) or not baseline.strip()
+                or not isinstance(proof, Source) or not proof.provider or not proof.reference
+                or not isinstance(proof.observed_at, datetime) or proof.observed_at.utcoffset() is None
+                or not 0 <= (snapshot.as_of - proof.observed_at).total_seconds() <= 300):
+            reasons.append(f"quarterback starter identity or source unavailable: {team}")
+            continue
+        if current != baseline and team not in snapshot.qb_change_teams:
+            reasons.append(f"quarterback change not declared in scenario snapshot: {team}")
+    return tuple(reasons)
+
+
 def construct_audited_tickets(snapshot, offered_legs, length, *, accuracy_report,
                              model_version, max_candidates=20000, audit_checks=None,
                              market_capture_path=None, market_capture_sha256=None):
@@ -29,6 +58,9 @@ def construct_audited_tickets(snapshot, offered_legs, length, *, accuracy_report
                                     expected_sha256=market_capture_sha256)
     if preflight.status != 'PASS':
         return AuditedConstructions('BLOCKED', preflight.reasons, ())
+    qb_reasons = verify_qb_context(snapshot, offered_legs)
+    if qb_reasons:
+        return AuditedConstructions('BLOCKED', qb_reasons, ())
     clearance = check_clearance(accuracy_report, snapshot, model_version=model_version, checks=audit_checks)
     if not clearance.cleared:
         return AuditedConstructions('BLOCKED', clearance.reasons, ())
