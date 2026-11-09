@@ -154,12 +154,22 @@ def candidates(pg: pd.DataFrame) -> pd.DataFrame:
 def build_dataset(verbose: bool = True) -> pd.DataFrame:
     pg = base_table()
     hist = player_history(pg).sort_values("last_kickoff")
-    cand = candidates(pg).sort_values("kickoff")
+    cand = candidates(pg)
+    # Always include the pregame-projected starting QB (e.g. a backup promoted by an Out designation),
+    # who may not have appeared in the team's previous three games.
+    gfq = pd.read_parquet(settings().lake_dir / "game_features.parquet", columns=["game_id", "home_team", "away_team", "home_qb_id", "away_qb_id"])
+    pq = pd.concat([gfq[["game_id", "home_team", "home_qb_id"]].set_axis(["game_id", "team", "player_id"], axis=1),
+                    gfq[["game_id", "away_team", "away_qb_id"]].set_axis(["game_id", "team", "player_id"], axis=1)]).dropna()
+    meta = cand.drop_duplicates(["game_id", "team"])[["game_id", "team", "season", "week", "kickoff"]]
+    pq = pq.merge(meta, on=["game_id", "team"])
+    cand = pd.concat([cand, pq]).drop_duplicates(["game_id", "team", "player_id"]).sort_values("kickoff")
     if verbose:
         print("player candidates", len(cand), flush=True)
     d = pd.merge_asof(cand, hist, left_on="kickoff", right_on="last_kickoff", by="player_id",
                       allow_exact_matches=False, direction="backward")
-    d = d[d["last_team"] == d["team"]]  # player's most recent game was for this team
+    proj_keys = set(zip(pq["game_id"], pq["player_id"]))
+    is_proj = pd.Series([k in proj_keys for k in zip(d["game_id"], d["player_id"])], index=d.index)
+    d = d[(d["last_team"] == d["team"]) | is_proj]  # most recent game was for this team, or projected starter
     d["days_since_last"] = (d["kickoff"] - d["last_kickoff"]).dt.days
     # Availability: official injury report for the game week
     inj = lake.load("injuries")[["season", "week", "team", "gsis_id", "report_status", "practice_status"]]
@@ -207,6 +217,8 @@ def build_dataset(verbose: bool = True) -> pd.DataFrame:
         d[f"y_{k}"] = d[f"y_{k}"].fillna(0.0) if f"y_{k}" in d else 0.0
     d["is_returner_kr"] = (d["ew_kickoff_returns"] > 0.3).astype(float)
     d["is_returner_pr"] = (d["ew_punt_returns"] > 0.3).astype(float)
+    from .vacated import add_vacated_usage
+    d = add_vacated_usage(d)
     d.to_parquet(settings().lake_dir / "player_dataset.parquet", index=False)
     return d
 
@@ -216,7 +228,9 @@ FEATURES = [c for c in [f"ew_{c}" for c in HIST_COLS] + [
     "std_carries", "std_attempts", "ew_ypt", "ew_ypc", "ew_ypa", "ew_catch", "ew_comp", "days_since_last",
     "questionable", "practice_dnp", "practice_limited", "is_home", "team_pts_pred", "opp_pts_pred", "team_margin_pred",
     "team_off_pass", "team_off_rush", "opp_def_pass", "opp_def_rush", "opp_def_pressure", "opp_off_pass", "opp_off_rush",
-    "projected_qb", "dome", "wind_mph", "temp_f", "is_neutral"]]
+    "projected_qb", "dome", "wind_mph", "temp_f", "is_neutral",
+    # vacated usage: teammates ruled Out/Doubtful (validated in research/vacated_usage_test.py)
+    "vac_tgt", "vac_car", "vac_att", "own_x_vac_tgt", "own_x_vac_car", "own_x_vac_att"]]
 POS_FEATURES = ["pos_QB", "pos_RB", "pos_WR", "pos_TE", "pos_DL", "pos_LB", "pos_DB"]
 BASELINE = {k: f"ew_{v}" for k, v in STATS.items()}
 

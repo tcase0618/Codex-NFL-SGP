@@ -63,7 +63,9 @@ def test_walk_forward_predictions_are_out_of_sample_and_calibrated():
 def test_player_candidates_exclude_out_players():
     d = pd.read_parquet(LAKE / "player_dataset.parquet", columns=["report_status", "last_kickoff", "kickoff"])
     assert not d["report_status"].isin(["Out", "Doubtful"]).any()
-    assert (pd.to_datetime(d["last_kickoff"]) < pd.to_datetime(d["kickoff"])).all()
+    last, ko = pd.to_datetime(d["last_kickoff"]), pd.to_datetime(d["kickoff"])
+    assert not (last >= ko).any()                 # no history at or after kickoff (leakage)
+    assert last.isna().mean() < 0.001             # only projected starters with no prior NFL game lack history
 
 
 @need("upcoming_game_predictions.parquet", "game_oos_predictions.parquet")
