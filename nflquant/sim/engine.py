@@ -184,14 +184,22 @@ class Sim:
         np.add.at(self.ts[stat], (sims, team), vals)
 
     # ---------------------------------------------------------------- run
-    def run(self, max_steps: int = 400):
+    def run(self, max_steps: int = 400, start: dict | None = None):
+        """Simulate from kickoff, or from a live ``start`` state at a half boundary:
+        {"quarter": 3, "clock": 900, "score": (home, away), "receiver": 0|1 (0=home)}.
+        Player/team stat arrays then hold only the remaining-game production."""
         n, rng, lg = self.n, self.rng, self.lg
         self.q = np.ones(n, np.int16)
         self.clock = np.full(n, 900.0)
         self.score = np.zeros((n, 2), np.int32)
         self.done = np.zeros(n, bool)
         self.opening = rng.integers(0, 2, n)  # team receiving opening kickoff
-        self.poss = self.opening.copy()
+        if start:
+            self.q[:] = start.get("quarter", 3)
+            self.clock[:] = start.get("clock", 900.0)
+            self.score[:, 0], self.score[:, 1] = start["score"]
+            self.opening[:] = 1 - start["receiver"]
+        self.poss = self.opening.copy() if not start else np.full(n, start["receiver"])
         self.yl = np.zeros(n)
         self.down = np.ones(n, np.int16)
         self.togo = np.full(n, 10.0)
