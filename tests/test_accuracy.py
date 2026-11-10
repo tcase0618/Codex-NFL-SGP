@@ -5,6 +5,24 @@ from football_engine.engine import AUDITORS
 from football_engine.construction import construct_audited_tickets
 from test_engine import snapshot, leg, NOW, SOURCE
 from test_market_first import capture
+from test_player_workup import fixture_workup
+
+
+def test_audited_construction_stops_before_clearance_without_qb_bad_game(monkeypatch):
+    from types import SimpleNamespace
+    from football_engine.engine import Leg
+    from football_engine import market_first
+
+    monkeypatch.setattr(market_first, 'verify_offered_pool',
+                        lambda *args, **kwargs: SimpleNamespace(status='PASS', reasons=(), archive_sha256='test'))
+    game = replace(snapshot(), qb_context={
+        'CHI': {'current_starter_id': 'qb-1', 'baseline_starter_id': 'qb-1', 'source': SOURCE}})
+    receiver_leg = Leg('wr', 'CHI', 'receiving_yards', 60, 0, 2, SOURCE)
+    result = construct_audited_tickets(game, (receiver_leg,), 3,
+                                       accuracy_report=None, model_version='test')
+    assert result.status == 'BLOCKED'
+    assert any('quarterback underperformance scenario missing' in reason
+               for reason in result.reasons)
 
 
 def test_nonfinite_auditor_evidence_blocks_only_the_affected_role():
@@ -41,6 +59,9 @@ def test_clearance_rechecks_scope_artifact_hash_and_all_seven_roles(tmp_path):
     report['auditors']['correlation']['evidence']['model_sha256']='a'*64
     report['auditors']['remaining']['evidence'].update(game_id=game.game_id,team_profile_versions=game.team_profile_versions,
         model_sha256='a'*64,snapshot_fingerprint=evidence_fingerprint(game),leg_fingerprints=[evidence_fingerprint(leg())])
+    workup = fixture_workup(tmp_path, game, leg())
+    report['auditors']['roster']['evidence'].update(workup['auditors']['roster']['evidence'])
+    report['verified_artifacts'].extend(workup['verified_artifacts'])
     report['report_hash']=report_hash(report)
     import copy
     checks={n:(lambda value=copy.deepcopy(report['auditors'][n]):copy.deepcopy(value)) for n in AUDITORS}
@@ -56,6 +77,14 @@ def test_clearance_rechecks_scope_artifact_hash_and_all_seven_roles(tmp_path):
     bound['auditors']['remaining']['evidence']['leg_fingerprints']=[evidence_fingerprint(captured_leg)]
     bound['report_hash']=report_hash({k:v for k,v in bound.items() if k!='report_hash'})
     bound_checks={n:(lambda value=copy.deepcopy(bound['auditors'][n]):copy.deepcopy(value)) for n in AUDITORS}
+    no_workups=copy.deepcopy(bound)
+    del no_workups['auditors']['roster']['evidence']['player_workups']
+    no_workups['report_hash']=report_hash({k:v for k,v in no_workups.items() if k!='report_hash'})
+    empty_checks={n:(lambda value=copy.deepcopy(no_workups['auditors'][n]):copy.deepcopy(value)) for n in AUDITORS}
+    missing_player_review=construct_audited_tickets(game,(captured_leg,),3,
+        accuracy_report=no_workups,model_version='m',audit_checks=empty_checks,
+        market_capture_path=capture_path,market_capture_sha256=capture_hash)
+    assert missing_player_review.status=='BLOCKED' and 'workups' in missing_player_review.reasons[0]
     allowed=construct_audited_tickets(game,(captured_leg,),3,
         accuracy_report=bound,model_version='m',audit_checks=bound_checks,
         market_capture_path=capture_path,market_capture_sha256=capture_hash)

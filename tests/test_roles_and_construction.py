@@ -5,7 +5,7 @@ import pytest
 
 from football_engine.engine import Leg, Player, evaluate_ticket, leg_key
 from football_engine.roles import ReceivingRole, apply_receiving_roles
-from football_engine.construction import construct_tickets, construct_anytime_td_tickets, verify_qb_context
+from football_engine.construction import construct_tickets, construct_anytime_td_tickets, verify_qb_context, verify_qb_underperformance
 from football_engine.settlement import _final_totals
 from research.collect_team_context import parse_tables
 from research.team_candidates import team_candidates
@@ -29,6 +29,33 @@ def test_audited_passing_pool_requires_sourced_current_and_baseline_qb_ids():
     from football_engine.snapshot_evidence import decode
     restored = decode(_json_ready(replace(game, qb_context=context)))
     assert verify_qb_context(restored, offered) == ()
+
+
+def test_audited_pool_requires_shared_sourced_qb_bad_game_for_yards_and_td():
+    offered = (Leg("wr", "MIN", "receiving_yards", 60, 0, 2, SOURCE),
+               Leg("wr", "MIN", "anytime_td", 1, 0, 2, SOURCE))
+    game = snapshot()
+    normal = replace(game.scenarios[0], weight=.8,
+                     remaining={"wr": {"targets": 8, "red_zone_touches": 2}},
+                     yards_per_opportunity={"wr": {"receiving_yards": 10}},
+                     touchdown_rate={"wr": .2})
+    bad = replace(game.scenarios[1], weight=.2,
+                  remaining={"wr": {"targets": 4, "red_zone_touches": 0}},
+                  yards_per_opportunity={"wr": {"receiving_yards": 10}},
+                  touchdown_rate={"wr": .2})
+    missing = replace(game, scenarios=(normal, bad))
+    assert "scenario missing" in verify_qb_underperformance(missing, offered)[0]
+    bad = replace(bad, qb_underperformance_teams=frozenset({"MIN"}), role_sources=(SOURCE,))
+    covered = replace(game, scenarios=(normal, bad))
+    assert verify_qb_underperformance(covered, offered) == ()
+    yards_only = replace(bad, remaining={"wr": {"targets": 4, "red_zone_touches": 2}})
+    assert "does not lower every affected leg" in verify_qb_underperformance(
+        replace(game, scenarios=(normal, yards_only)), offered)[0]
+    token = replace(game, scenarios=(replace(normal, weight=.99), replace(bad, weight=.01)))
+    assert "below stress weight" in verify_qb_underperformance(token, offered)[0]
+    from football_engine.ledger import _json_ready
+    from football_engine.snapshot_evidence import decode
+    assert decode(_json_ready(covered)).scenarios[1].qb_underperformance_teams == frozenset({"MIN"})
 
 
 def test_promoted_backup_inherits_supported_targets_without_inventing_td_role():

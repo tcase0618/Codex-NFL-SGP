@@ -25,7 +25,7 @@ def decode(value):
     for s in value['scenarios']:
         scenarios.append(Scenario(s['name'],s['weight'],s['remaining'],s['yards_per_opportunity'],s['touchdown_rate'],source(s['source']),
             s.get('maximum_remaining',{}),tuple(s.get('joint_samples',[])),s.get('passing_td_per_attempt',{}),tuple(source(v) for v in s.get('role_sources',[])),
-            frozenset(s.get('qb_change_teams',[]))))
+            frozenset(s.get('qb_change_teams',[])),frozenset(s.get('qb_underperformance_teams',[]))))
     state=value.get('state')
     if state is not None:state=GameState(state['seconds_remaining'],state['status'],source(state['source']),state.get('scores',{}))
     return Snapshot(value['game_id'],stamp(value['as_of']),stamp(value['kickoff']),players,tuple(scenarios),source(value['source']),state,value.get('team_profile_versions',{}),

@@ -47,6 +47,55 @@ def verify_qb_context(snapshot: Snapshot, offered_legs) -> tuple[str, ...]:
     return tuple(reasons)
 
 
+def verify_qb_underperformance(snapshot: Snapshot, offered_legs,
+                               *, minimum_weight: float = 0.05) -> tuple[str, ...]:
+    """Require one shared, sourced low-QB-output script for dependent markets.
+
+    This validates scenario coverage, not its probability calibration or edge.
+    Audited construction uses it before selecting any tickets.
+    """
+    from .engine import YARDAGE_OPPORTUNITY
+
+    affected_markets = {"passing_yards", "passing_td", "receiving_yards", "anytime_td"}
+    teams = {leg.team_id for leg in offered_legs
+             if isinstance(leg, Leg) and leg.market in affected_markets}
+    reasons = []
+
+    def expected(scenario, leg):
+        remaining = scenario.remaining.get(leg.player_id, {})
+        if leg.market == "anytime_td":
+            volume = remaining.get("unique_scoring_chances")
+            if volume is None:
+                if "red_zone_touches" not in remaining and "end_zone_targets" not in remaining:
+                    return None
+                volume = remaining.get("red_zone_touches", 0) + remaining.get("end_zone_targets", 0)
+            rate = scenario.touchdown_rate.get(leg.player_id)
+        elif leg.market == "passing_td":
+            volume = remaining.get("attempts")
+            rate = scenario.passing_td_per_attempt.get(leg.player_id)
+        else:
+            volume = remaining.get(YARDAGE_OPPORTUNITY[leg.market])
+            rate = scenario.yards_per_opportunity.get(leg.player_id, {}).get(leg.market)
+        return volume * rate if volume is not None and rate is not None else None
+
+    for team in sorted(teams):
+        legs = tuple(leg for leg in offered_legs if leg.team_id == team and leg.market in affected_markets)
+        low = tuple(s for s in snapshot.scenarios if team in s.qb_underperformance_teams)
+        normal = tuple(s for s in snapshot.scenarios if team not in s.qb_underperformance_teams)
+        if not low or not normal:
+            reasons.append(f"quarterback underperformance scenario missing: {team}")
+            continue
+        if sum(s.weight for s in low) < minimum_weight:
+            reasons.append(f"quarterback underperformance scenario below stress weight: {team}")
+        if not any(s.role_sources and all(
+                expected(s, leg) is not None
+                and all(expected(b, leg) is not None and expected(s, leg) < expected(b, leg)
+                        for b in normal)
+                for leg in legs) for s in low):
+            reasons.append(f"quarterback underperformance does not lower every affected leg: {team}")
+    return tuple(reasons)
+
+
 def construct_audited_tickets(snapshot, offered_legs, length, *, accuracy_report,
                              model_version, max_candidates=20000, audit_checks=None,
                              market_capture_path=None, market_capture_sha256=None):
@@ -61,6 +110,9 @@ def construct_audited_tickets(snapshot, offered_legs, length, *, accuracy_report
     qb_reasons = verify_qb_context(snapshot, offered_legs)
     if qb_reasons:
         return AuditedConstructions('BLOCKED', qb_reasons, ())
+    qb_downside_reasons = verify_qb_underperformance(snapshot, offered_legs)
+    if qb_downside_reasons:
+        return AuditedConstructions('BLOCKED', qb_downside_reasons, ())
     clearance = check_clearance(accuracy_report, snapshot, model_version=model_version, checks=audit_checks)
     if not clearance.cleared:
         return AuditedConstructions('BLOCKED', clearance.reasons, ())
@@ -82,6 +134,10 @@ def construct_audited_tickets(snapshot, offered_legs, length, *, accuracy_report
     expected=accuracy_report['auditors']['remaining']['evidence'].get('leg_fingerprints')
     if actual!=expected:
         return AuditedConstructions('BLOCKED',('offered legs differ from audited prices, totals or sources',),())
+    from .player_workup import verify_player_workups
+    player_reasons = verify_player_workups(snapshot, offered_legs, accuracy_report)
+    if player_reasons:
+        return AuditedConstructions('BLOCKED', player_reasons, ())
     candidates = construct_tickets(snapshot, offered_legs, length, max_candidates=max_candidates)
     return AuditedConstructions('RESEARCH_ONLY', ('Independent price and game-day verification still required.',), candidates)
 

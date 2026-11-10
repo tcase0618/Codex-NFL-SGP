@@ -47,6 +47,7 @@ class Scenario:
     passing_td_per_attempt: dict[str, float] = field(default_factory=dict)
     role_sources: tuple[Source, ...] = ()
     qb_change_teams: frozenset[str] = frozenset()
+    qb_underperformance_teams: frozenset[str] = frozenset()
 
 
 @dataclass(frozen=True)
@@ -203,10 +204,14 @@ def _validate_inputs(snapshot, legs, max_age, minimum, aggressive) -> str | None
                 or scenario.name in names or not _number(scenario.weight) or not 0 < scenario.weight <= 1
                 or not isinstance(scenario.role_sources, (tuple, list))
                 or not isinstance(scenario.qb_change_teams, frozenset)
-                or any(not _text(team) for team in scenario.qb_change_teams)):
+                or any(not _text(team) for team in scenario.qb_change_teams)
+                or not isinstance(scenario.qb_underperformance_teams, frozenset)
+                or any(not _text(team) for team in scenario.qb_underperformance_teams)):
             return "invalid scenario weights or structure"
         if scenario.qb_change_teams and not scenario.role_sources:
             return "missing quarterback change scenario role provenance"
+        if scenario.qb_underperformance_teams and not scenario.role_sources:
+            return "missing quarterback underperformance scenario provenance"
         names.add(scenario.name)
         sources.extend((scenario.source, *scenario.role_sources))
         for mapping, allowed, kind in ((scenario.remaining, opportunities, "volume"),
