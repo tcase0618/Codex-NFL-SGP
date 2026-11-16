@@ -22,11 +22,14 @@ def espn_event(home, away, kickoff):
                 return e
     return None
 
+INJ = {}
+
 def qb_check(pred, ev):
     flags = []
     if ev is None: return ["no ESPN event match"]
     s = json.load(urllib.request.urlopen(f"{ESPN}/summary?event={ev['id']}", timeout=20))
     inj = {norm(i["athlete"]["displayName"]): i.get("status", "") for t in s.get("injuries", []) for i in t.get("injuries", [])}
+    INJ.clear(); INJ.update(inj)
     for side, q in pred["projected_qbs"].items():
         name = (q or {}).get("name")
         if not name: flags.append(f"{side} QB unknown"); continue
@@ -58,6 +61,9 @@ def main():
             found = False
             for c in [c for c in combos if c["k"] == k]:
                 legs = [l.rsplit("|", 1)[0] for l in c["legs"]]
+                # every leg's player must be off the ESPN injury report (Out/Doubtful/Questionable) - Codex-NFL-SGP#1
+                if any(INJ.get(norm(l.split("|")[0]), "").lower() in ("out", "doubtful", "questionable", "injured reserve") for l in c["legs"]):
+                    continue
                 if all(used.get(x, 0) < 2 for x in legs):
                     for x in legs: used[x] = used.get(x, 0) + 1
                     L = [{"player": a, "stat": b, "line": float(cc), "p_sim": float(p)} for a, b, cc, p in (l.split("|") for l in c["legs"])]
