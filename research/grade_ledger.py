@@ -89,3 +89,53 @@ def main_nfl(path, eid="401873051"):
 if __name__ == "__main__":
     res = main_nba(sys.argv[2]) if sys.argv[1] == "nba" else main_nfl(sys.argv[2])
     print(json.dumps(res, indent=1, default=str))
+
+
+# ---- slot_sgp.py ticket format: legs = [{player, stat, line, p_sim}], espn_event on the row ----
+def _nfl_box_by_event(eid):
+    j = get("football/nfl", eid); c = j["header"]["competitions"][0]
+    pl = {}
+    for team in j["boxscore"].get("players", []):
+        for g in team["statistics"]:
+            for a in g["athletes"]:
+                d = pl.setdefault(norm(a["athlete"]["displayName"]), {}); v = dict(zip(g["keys"], a["stats"]))
+                if g["name"] == "passing":
+                    d["pass_yds"] = int(v["passingYards"]); d["pass_td"] = int(v["passingTouchdowns"])
+                if g["name"] == "rushing":
+                    d["rush_yds"] = int(v["rushingYards"]); d["rush_td"] = int(v["rushingTouchdowns"])
+                if g["name"] == "receiving":
+                    d["rec_yds"] = int(v["receivingYards"]); d["rec"] = int(v["receptions"]); d["rec_td"] = int(v["receivingTouchdowns"])
+    sc = {t["team"]["abbreviation"]: int(t.get("score", 0) or 0) for t in c["competitors"]}
+    return pl, sc, c["status"]["type"]["completed"]
+
+ALIAS = {"LA": "LAR"}
+
+def grade_slot_rows(path):
+    rows = [json.loads(l) for l in open(path)]
+    done = {r["ref_row"] for r in rows if r.get("type") == "settlement"}
+    cache, out = {}, []
+    for i, r in enumerate(rows):
+        if r.get("type") != "ticket" or r.get("status") != "OPEN" or i in done or not r.get("espn_event"): continue
+        eid = r["espn_event"]
+        if eid not in cache: cache[eid] = _nfl_box_by_event(eid)
+        pl, sc, final = cache[eid]
+        if not final: continue
+        gs = []
+        for l in r["legs"]:
+            who, st, ln = l["player"], l["stat"], l["line"]
+            if st == "win":
+                team = ALIAS.get(who.split()[0], who.split()[0]); opp = [t for t in sc if t != team]
+                v = sc.get(team, 0) - (sc[opp[0]] if opp else 0); g = "WON" if v > 0 else "LOST"
+            elif who == "Game total":
+                v = sum(sc.values()); g = "WON" if (v > ln if st == "over" else v < ln) else "LOST"
+            else:
+                d = pl.get(norm(who))
+                if d is None: v, g = None, "VOID"
+                else:
+                    v = d.get("rush_td", 0) + d.get("rec_td", 0) if st == "any_td" else d.get(st, 0)
+                    g = "WON" if v > ln else "LOST"
+            gs.append(f"{who} {st} o{ln}: {v} {g}")
+        res = "LOST" if any(s.endswith(" LOST") for s in gs) else ("WON" if all(s.endswith(" WON") for s in gs) else "VOID_AFFECTED")
+        out.append({"type": "settlement", "ref_row": i, "settled_at": datetime.now(timezone.utc).isoformat(), "source": "ESPN final box score", "result": res, "legs": gs})
+    open(path, "a").write("".join(json.dumps(x) + "\n" for x in out))
+    return rows, out
