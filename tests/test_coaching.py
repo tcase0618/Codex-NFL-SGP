@@ -106,6 +106,21 @@ def test_coach_identity_normalizes_apostrophes_but_rejects_wrong_person(tmp_path
         attach_coaching(store.profile("CHI",NOW),c)
 
 
+def test_sourced_assistant_can_call_plays_without_becoming_coordinator(tmp_path):
+    store=TeamProfileStore(tmp_path/"team.sqlite");store.add_game(observations())
+    profile=store.profile("CHI",NOW)
+    c=context()
+    source=copy.deepcopy(c["play_callers"]["offense"]["sources"][0])
+    c["additional_staff"]=[dict(name="Assistant Coach",title="Senior defensive assistant",sources=[source])]
+    c["play_callers"]["defense"]=dict(name="Assistant Coach",status="CONFIRMED",sources=[source])
+    updated=attach_coaching(profile,c)
+    assert updated["coaching"]["staff"]["defensive_coordinator"]["name"] == "DC"
+    assert updated["coaching"]["play_callers"]["defense"]["name"] == "Assistant Coach"
+    c["additional_staff"][0]["sources"][0]["observed_at"]=(NOW+timedelta(seconds=1)).isoformat()
+    with pytest.raises(ValueError,match="future"):
+        attach_coaching(profile,c)
+
+
 def test_historical_tactical_foundation_cannot_be_assigned_to_wrong_coach(tmp_path):
     store=TeamProfileStore(tmp_path/"team.sqlite");store.add_game(observations())
     c=context()

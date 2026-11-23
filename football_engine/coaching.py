@@ -27,7 +27,11 @@ def attach_coaching(profile: dict, coaching: dict) -> dict:
         if not staff.get("name") and not (role == "defensive_coordinator" and staff["status"] == "NOT_SEPARATELY_LISTED"):
             raise ValueError("principal coaching role cannot be silently omitted")
     # Evidence is attached to each fact, not just a generic team URL.
-    records = list(coaching["staff"].values()) + list(coaching["play_callers"].values())
+    additional_staff = coaching.get("additional_staff", [])
+    for member in additional_staff:
+        if not member.get("name") or not member.get("title"):
+            raise ValueError("additional coaching staff requires a name and title")
+    records = list(coaching["staff"].values()) + additional_staff + list(coaching["play_callers"].values())
     records += [coaching["head_coach_management"], coaching["offense"], coaching["defense"]]
     records += coaching.get("changes", [])
     records += coaching.get("reported_rates", [])
@@ -49,7 +53,9 @@ def attach_coaching(profile: dict, coaching: dict) -> dict:
     for caller in coaching["play_callers"].values():
         if caller["status"] not in ("CONFIRMED", "UNCONFIRMED", "DATED_PRESEASON_REPORT") or (caller["status"] != "UNCONFIRMED" and not caller.get("name")):
             raise ValueError("invalid play-caller evidence")
-        if caller.get("name") and coach_identity(caller["name"]) not in {coach_identity(s["name"]) for s in coaching["staff"].values()}:
+        if caller.get("name") and coach_identity(caller["name"]) not in {
+            coach_identity(s["name"]) for s in list(coaching["staff"].values()) + additional_staff
+        }:
             raise ValueError("play-caller is not reconciled with coaching staff")
     for rate in coaching.get("reported_rates", []):
         if (not isfinite(rate["value"]) or not 0 <= rate["value"] <= 1
