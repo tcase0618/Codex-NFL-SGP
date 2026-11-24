@@ -18,7 +18,9 @@ def espn_event(home, away, kickoff):
         j = json.load(urllib.request.urlopen(f"{ESPN}/scoreboard?dates={day}", timeout=20))
         for e in j["events"]:
             ab = {t["homeAway"]: t["team"]["abbreviation"] for t in e["competitions"][0]["competitors"]}
-            if ab.get("home") in (home, {"LA": "LAR"}.get(home, home)) and ab.get("away") in (away, {"LA": "LAR"}.get(away, away)):
+            # nflverse -> ESPN abbreviation aliases (WAS is WSH on ESPN, LA is LAR)
+            alias = {"LA": "LAR", "WAS": "WSH"}
+            if ab.get("home") in (home, alias.get(home, home)) and ab.get("away") in (away, alias.get(away, away)):
                 return e
     return None
 
